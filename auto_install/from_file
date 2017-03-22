@@ -1,0 +1,100 @@
+#!/bin/bash
+jspath="/usr/local/share/cg-rtl/lxr/templates/html/html_head_btn_files/plat.js"
+split () {
+local symbol=$1
+local str=$2
+local arr=(${str//$symbol/ })
+i=0
+for  x in ${arr[@]}
+do
+local str1[$i]=$x
+((i++))
+done
+echo ${str1[@]}
+}
+del_sym (){
+local str=$1
+local str=${str//'['}
+local str=${str//"dsy.add("}
+local str=${str//"]);"}
+local str=${str//"\""}
+echo $str
+}
+parent_datav () {
+#echo vvvv
+#echo vvvv
+tac $jspath| while read linev
+do
+if [ $( expr  match "$linev"  ".*dsy.add") -ne 0 ];then
+local linev=`del_sym $linev`
+local str=(`split "," $linev`)
+#echo $1
+if [ "${str[0]}"x = "$1"x ];then
+if [ `expr length ${str[0]}` -eq 1  ];then
+#echo ${str[0]}
+echo  ${str[$2+1]}
+a=1
+fi
+fi
+fi
+done
+}
+parent_datap () {
+#echo $1
+tac $jspath| while read linep
+do
+if [ $( expr  match "$linep"  ".*dsy.add") -ne 0 ];then
+local linep=`del_sym $linep`
+local str=(`split "," $linep`)
+if [ "${str[0]}"x = "$1"x ];then
+if [ `expr length ${str[0]}` -eq 3  ];then
+#echo ${str[0]}
+#echo $1
+#echo -----
+#echo $2
+local self[1]=${str[$2+1]}
+#parent_datav ${str[0]%'_'*} ${str[0]##*'_'}
+local self[0]=`parent_datav ${str[0]%'_'*} ${str[0]##*'_'}`
+echo ${self[@]}
+fi
+fi
+fi
+done
+}
+
+generatearr () {
+
+while read linea
+do
+if [ $( expr  match "$linea"  ".*dsy.add") -ne 0 ];then
+local linea=`del_sym $linea`
+
+local str=(`split "," $linea`)
+if [ `expr length ${str[0]}` -eq 5 ];then
+local parent=`parent_datap ${str[0]%'_'*} ${str[0]##*'_'}`
+#parent_datap ${str[0]%'_'*} ${str[0]##*'_'}
+#abc[2]=${str[1]}
+local parent1=${parent[@]}
+local parent=("${parent[@]}" "${str[1]}")
+local parent1=("${parent1[@]}" "${str[2]}")
+if [ ${str[2]}x != ""x ];then
+parentall=("${parent[@]}" "${parent1[@]}")
+alldata=("${alldata[@]}" "${parentall[@]}")
+fi
+alldata=("${alldata[@]}" "${parent[@]}")
+#all=${all[@]}
+parent=()
+parent1=()
+abc=1
+#echo ${alldata[@]}
+fi
+fi
+done<$jspath
+#echo $abc
+echo ${alldata[@]}
+}
+
+#generatearr
+all=( `generatearr` )
+echo ${all[@]}
+

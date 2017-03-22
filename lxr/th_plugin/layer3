@@ -1,0 +1,80 @@
+<g
+        id="attr01"
+        visibility="hidden"
+ >
+    <rect
+       style="fill:#DB7093;display:inline"
+       id="attrre01"
+       width="120"
+       height="32"
+       x="22"
+       y="357"
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="attrte01"
+         font-size="10.00"
+         x="28"
+         y="380">zoom</text>
+
+ </g>
+ <g
+        id="attr02"
+        visibility="hidden"
+ >
+    <rect
+       style="fill:#AAD5EF;display:inline"
+       id="attrre02"
+       width="120"
+       height="32"
+       x="22"
+       y="325" 
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="attrte02"
+         font-size="10.00"
+         x="28"
+         y="348">further graph</text>
+
+ </g>
+ <g
+        id="attr03"
+        visibility="hidden"
+ >
+    <rect
+       style="fill:#EFE9CE;display:inline"
+       id="attrre03"
+       width="120"
+       height="32"
+       x="22"
+       y="293" 
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="attrte03"
+         font-size="10.00"
+         x="28"
+         y="316">call list</text>
+
+ </g>
+<g
+        id="attr04"
+        visibility="hidden"
+ >
+    <rect
+       style="fill:#DDDDDD;display:inline"
+       id="attrre04"
+       width="120"
+       height="32"
+       x="22"
+       y="261" 
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="attrte04"
+         font-size="10.00"
+         x="28"
+         y="284">call list</text>
+
+ </g>

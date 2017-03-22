@@ -1,0 +1,102 @@
+#!/usr/bin/perl 
+# $Id: find,v 1.3 1998/04/30 11:58:16 argggh Exp $
+
+# find   --	Find files
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+#use lib 'lib/';
+#use LXR::Common;
+#use LXR::Config;
+#use strict;
+#use LXR::Common;
+#use LXR::Markup;
+#use LXR::Template;
+#use Local;
+#use FileHandle;
+
+#use CGI qw(:all); 
+my $ver_v=$ARGV[0]; # CodeVersion
+my $ver_a=$ARGV[1]; # Platform
+my $ver_f=$ARGV[2]; # FolderType
+
+my $test_name=$ARGV[5]; # Test name
+my $start_position=$ARGV[3]; # Start Position
+my $end_position=$ARGV[4]; # End Position
+
+my $sourceroot=$ARGV[6];	# sourcerooot
+my $sh_ruby_source=$ARGV[7];	# script root
+my $baseurl=$ARGV[8];	# link rout
+my $ddir=$ARGV[9];
+my $code_url=$ARGV[10];
+my $note_url=$ARGV[11];
+my $dbdir;
+   $dbdir=sprintf($ddir."\/".$ver_v."\/".$ver_a."\/");
+#my $c1,$draw_command,$temp_pic,$temp_zoom,$zoom_module,$graph_moudle;
+#my $temp_source01,$temp_source1,$temp_source2;
+
+#my $temp_source1_zoom,$temp_source_1,$temp_source_1_zoom;
+#my $watch,$call;
+#my $pathv;
+#my $file_name;
+#	print("<br>Start of Script \"binder-perl\"<br>");
+#	print ("<br>argv_0:".$ARGV[0]."<br>argv_1:".$ARGV[1]."<br>argv_2:".$ARGV[2]."<br>argv_3:".$ARGV[3]."<br>argv_4:".$ARGV[4]."<br>argv_5:".$ARGV[5]."<br>argv_6:".$ARGV[6]."<br>argv_7:".$ARGV[7]."<br>argv_8:".$ARGV[8]."<br>argv_9:".$ARGV[9]."<br>argv_10:".$ARGV[10]."<br>argv_11:".$ARGV[11]."<br>argv_12:".$ARGV[12]);
+#	print("<br>CodeVersion=".$ver_v."<br>Platform=".$ver_a."<br>FolderType=".$ver_f."<br>Start Position=".$start_position."<br>End Position=".$end_position."<br>SecondVersion=".$test_name."<br>ZoomCheckbox=".$code_url."<br>baseurl=".$baseurl."<br>");
+    if ($code_url ne "1") {$c1=0;}     else {$c1=1;}
+
+#	$draw_command=sprintf($sh_ruby_source.".\/auto_diff_graph.sh");    
+	$draw_command=sprintf($sh_ruby_source.".\/draw_from_db.sh");    
+#	$draw_command=sprintf("\/home\/wjbang\/binder\/draw_from_db.sh");    
+	$create_db_command=sprintf($sh_ruby_source.".\/binder\@1.40.sh");    
+	$temp_source01=sprintf($sourceroot."\/".$ver_v."\/".$ver_a."\/linux\/");
+	my $oldtime = time();
+	$temp_source1=$baseurl;
+#         $temp_source2=sprintf($temp_source1.$temp_source0);
+	$temp_source2=sprintf($temp_source1."\/source1"."\/".$ver_v."\/".$ver_a."\/");
+	$file_name= sprintf("index-".$start_position."-".$end_position); 
+        $PathPrefix= $sourceroot;
+        $LinkPrefix= sprintf($baseurl."\/source1\/binder");
+        $PathFileName= sprintf("\/".$file_name.".html");
+        $HTML_Filename= sprintf($PathPrefix.$PathFileName);
+        $HTML_Filelink= sprintf($LinkPrefix.$PathFileName);
+	$DB_FlagFile= sprintf($PathPrefix."\/sec.done");
+#	print ("<br>diffe-perl: DB_FlagFile=".$DB_FlagFile."<br>create_db_command=".$create_db_command."<br>file_name=".$file_name."<br>PathPrefix=".$PathPrefix."<br>LinkPrefix=".$LinkPrefix."<br>PathFileName=".$PathFileName."<br>draw_command=".$draw_command."<br>ddir=".$ddir."<br>temp_source1=".$temp_source1."<br>temp_source_1=".$temp_source_1."<br>temp_source1_zoom=".$temp_source1_zoom."<br>temp_source_1_zoom=".$temp_source_1_zoom."<br>temp_pic=".$temp_pic."<br>GraphFilenameA=".$GraphFilenameA."<br>GraphFilenameB=".$GraphFilenameB."<br>HTML_Filename=".$HTML_Filename."<br>HTML_Filelink=".$HTML_Filelink."<br>"); 
+   #####20121206
+	if ( ! -e $DB_FlagFile ){
+		@args= ("sh","$create_db_command","$sourceroot");
+#		print ("<br>Commandline: sh ".$create_db_command." ".$sourceroot);
+		system(@args);
+		print ("<br>Script \"binder-perl\" finished without database.<br>\n");
+	}elsif ( ! -e $HTML_Filename ) {
+		@args= ("sh","$draw_command","$start_position","$end_position","$ddir");
+#		print ("<br>Commandline: sh ".$draw_command." ".$start_position." ".$end_position." ".$ddir);
+		system(@args);
+		print ("<br>Script \"binder-perl\" finished without cache.<br>\n");
+	} else {
+		print ("<br>Script \"binder-perl\" finished with cache.<br>\n");
+	}
+	
+	my $oo=time()-$oldtime;
+	print "Run time is $oo second\n";      
+		
+	print (" <embed src=\"",$HTML_Filelink,"\"  style=\"margin:0 10px 0 0;\"/>\n ");
+	print("<hr>\n");
+

@@ -1,0 +1,145 @@
+#!/usr/bin/perl -T 
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+@docxygen=("","","","","","","linux-3.5.4","x86_32","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-pandaboard","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-galaxy-nexus","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-Raspberrypi","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_64","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_32","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-pandaboard","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-galaxy-nexus","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-Raspberrypi","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_64","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.8","arm-pandaboard","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-galaxy-nexus","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-Raspberrypi","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_32","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_64","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-pandaboard","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-galaxy-nexus","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-Raspberrypi","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_32","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_64","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-pandaboard","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-galaxy-nexus","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-Raspberrypi","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_32","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_64","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-pandaboard","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-galaxy-nexus","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-Raspberrypi","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_32","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_64","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.5.4","x86_32","real","iscas","http://124.16.141.160/lxr-0401/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.8.13","x86_32","real","iscas","http://124.16.141.160/lxr-0401/source/","http://124.16.141.171:81/mediawiki/index.php/","Android-4.4.3","arm-Nexus5","real","iscas","http://124.16.141.184/lxr/source/","","Android-4.4.3","arm-Nexus5","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","Android-4.4.3","arm-Nexus5","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","x86_32","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","x86_64","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","arm-Raspberrypi","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","x86_32","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","x86_64","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","arm-Raspberrypi","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","mips","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","mips","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","mips","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","mips","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","ucore","mips","real","iscas","http://124.16.141.184/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/"
+);
+$length=@docxygen;
+sub dcgAnalyser{   
+
+$origScript = <<END;
+<script>
+function onSubmit()
+{
+    var d=document;
+    var f_path = d.getElementById('f_path').value;
+    var f_name = d.getElementById('f_name').value;
+    var s_time = d.getElementById('s_time').value;
+    var e_time = d.getElementById('e_time').value;
+    if(f_path ==""||f_name==""||s_time==""||e_time=="")
+    {
+	alert('input can not be empty');
+	return false;
+    }
+    return true;
+}
+</script>
+END
+
+print $origScript;     
+print("<form memethod=get action=\"dcgAnalyser\" onsubmit=\"return onSubmit()\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+print("<input type=\"hidden\" name=\"t\" value=\"",$ENV{'QUERY_STRINGTID'},"\">");
+print("function path: <input type=text id=\"f_path\" name = \"f_path\" ","value=\"",$f_path,"\" size=20 >\n");
+print("function name: <input type=text id=\"f_name\" name =\"f_name\" ","value=\"",$f_name,"\" size=20 >\n");
+#print("n name: <input teype=text name=\"exception_type\" ","value=\"",$e_type,"\" size=20 >\n");
+print("stat type:
+<select name=\"stat_type\">  
+  <option value ='frequency'>frequency</option>  
+  <option value ='mean'>mean</option>  
+  <option value='std'>std</option>  
+</select>
+"
+); 
+
+print("start time(%): <input type=text id=\"s_time\" name =\"s_time\"","value=\"",$s_time,"\" size=5 >\n");
+print("end time(%): <input type=text id=\"e_time\" name = \"e_time\"","value=\"",$e_time,"\" size=5 >\n");
+print("interval(1E9): <input type=text id=\"interval\" name = \"interval\"","value=\"",$interval,"\" size=5 >\n");
+print("<input type=submit value=\"dcgAnalyser\">\n","</form>\n");
+
+
+if ($f_path eq "" || $f_name eq "" || $stat_type eq "" || $s_time eq "" || $e_time eq "")
+{
+    #print("<script>alert('the input can not be empty!');</script>");
+}
+else
+{
+    $pic_name = $f_path1."_".$f_name."_".$stat_type."_".$ver_v."_".$ver_f."_".$ver_a."_".$s_time."_".$e_time."_".$interval.".svg";
+    $args = "python "."dcg/statistics.py ".$f_path." ".$f_name." ".$stat_type." ".$ver_v." ".$ver_f." ".$ver_a." ".$s_time." ".$e_time." ".$interval;
+    print $args;
+    $re = readpipe($args);
+    if($re == 0)
+    {
+	print "no such function!";
+    }
+    else
+    {
+    #    print("<embed src=\"http://os.cs.tsinghua.edu.cn:280/lxr/dcg/pic/result_",$pic_name ,"\"  style=\"margin:0 10px 0 0;\"/>");
+        print("<embed src=\"http://192.168.2.113/lxr/dcg/pic/result_",$pic_name ,"\"  style=\"margin:0 10px 0 0;\"/>");
+    }
+}
+
+}
+httpinit;
+if (!$ENV{'QUERY_STRINGFID'}) #added from 20150609 by jdi -- default argvs
+{
+	$ver_v=$ENV{'QUERY_STRINGSID'};
+	$ver_a=$ENV{'QUERY_STRINGPID'};
+	$ver_f="R";
+} 
+else
+{
+	$ver_v=$ENV{'QUERY_STRINGSID'};
+	$ver_a=$ENV{'QUERY_STRINGPID'};
+	$ver_f=$ENV{'QUERY_STRINGFID'};
+	if($ver_f eq "real")
+	{
+		$ver_f="R";
+	}
+}
+=begin
+if(!$ENV{'QUERY_STRINGFID'}||!$ENV{'QUERY_STRINGPID'}||!$ENV{'QUERY_STRINGSID'})
+{
+	$ver_v="linux-3.5.4";
+	$ver_a="x86_32";
+	$ver_f="real";
+}
+=cut
+$f_path =$HTTP->{'param'}->{'f_path'};
+### for the pic_name can't contain character '/',we replace '/' by '~'
+$f_path1 = $f_path;
+$f_path1 =~ s/\//~/g; 
+$f_name =$HTTP->{'param'}->{'f_name'};
+$stat_type = $HTTP->{'param'}->{'stat_type'};
+$s_time=$HTTP->{'param'}->{'s_time'};
+$e_time=$HTTP->{'param'}->{'e_time'};
+$interval=$HTTP->{'param'}->{'interval'};
+$sid=$HTTP->{'param'}->{'v'};
+makeheader('dcgAnalyser');
+&dcgAnalyser;
+makefooter('dcgAnalyser');
+
+httpclean;
+

@@ -1,0 +1,254 @@
+#!/usr/bin/perl 
+# $Id: find,v 1.3 1998/04/30 11:58:16 argggh Exp $
+
+# find   --	Find files
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+#use lib 'lib/';
+#use LXR::Common;
+#use LXR::Config;
+#use strict;
+#use LXR::Common;
+#use LXR::Markup;
+#use LXR::Template;
+#use Local;
+#use FileHandle;
+
+#use CGI qw(:all); 
+my $path0=$ARGV[3];
+my $path1=$ARGV[4];
+my $sourceroot=$ARGV[6];
+my $sh_ruby_source=$ARGV[7];
+my $che1=$ARGV[5];
+my $baseurl=$ARGV[8];
+my $ddir=$ARGV[9];
+my $ver_v=$ARGV[0];
+my $ver_a=$ARGV[1];
+my $ver_f=$ARGV[2];
+my $code_url=$ARGV[10];
+my $note_url=$ARGV[11];
+my $dbdir;
+   $dbdir=sprintf($ddir."\/".$ver_v."\/".$ver_a."\/");
+#my $c1,$temp_sh,$temp_pic,$temp_zoom,$zoom_module,$graph_moudle;
+#my $temp_source01,$temp_source1,$temp_source2;
+
+#my $temp_source1_zoom,$temp_source_1,$temp_source_1_zoom;
+#my $watch,$call;
+#my $pathv;
+#my $file_name;
+    if ($che1 ne "t1") {$c1=0;}     else {$c1=1;}
+
+#printf("1111".$sh_ruby_source);
+
+
+#      $temp_sh=sprintf($Conf->htmlhead);
+#      $temp_out=$temp_sh;
+#    $cache_filename=$temp_sh;
+#      $cache_filename=~s/\/template-head//;
+#      $cache_filename=$cache_filename."\/callgraph.appcache";
+#      $temp_out=~s/\/http\/template-head//;
+#      $temp_sh=~s/template-head/.\/callgraphweb.rb/;
+       $temp_sh=sprintf($sh_ruby_source.".\/callgraph-sql.rb");    
+#      $temp_pic=sprintf($Conf->htmlhead);
+#      $temp_pic=~s/template-head/.\/pic.rb/;#20130308
+       $temp_pic=sprintf($sh_ruby_source.".\/pic.rb");     
+#      $temp_zoom=sprintf($Conf->htmlhead);
+#      $temp_zoom=~s/template-head/.\/amplify.rb/;
+       $temp_zoom=sprintf($sh_ruby_source.".\/amplify.rb");
+      $graph_moudle=$ver_f;
+      $zoom_module=$c1;
+# print("**".$zoom_module."**",$che1."**"); 
+ ##20130117 end
+if ($path0 ne "NULL"|| $path1 ne "NULL") {
+ #        $temp_source01=sprintf($Conf->sourceroot); 
+	$temp_source01=sprintf($sourceroot."\/".$ver_v."\/".$ver_a."\/");
+	my $oldtime = time();
+#         $temp_source0=$temp_source01;
+#         $temp_source0=~s/$temp_out//;
+#         $temp_source0=~s/linux\///;
+#         $temp_source1=sprintf($Conf->baseurl);
+	$temp_source1=$baseurl;
+#         $cache_manifest=sprintf("\/lxr".$temp_source0);
+#         $wacth=sprintf($temp_source1."watchfuc?v=");#"http://localhost/lxr/http/watchfuc?v="     
+	$wacth=sprintf($temp_source1."/watchlist?");#"http://localhost/lxr/http/watchfuc?v=" 
+#         $call=sprintf($temp_source1."callgraph?v=");#"http://localhost/lxr/http/watchfuc?v="     
+	$call=sprintf($temp_source1."/call?");#"http://localhost/lxr/http/watchfuc?v=" 
+
+#         $temp_source1=~s/\/http\///;
+#         $temp_source2=sprintf($temp_source1.$temp_source0);
+	$temp_source2=sprintf($temp_source1."\/source1"."\/".$ver_v."\/".$ver_a."\/");
+        
+  
+  #path0与path1的组合共9种可能：root-root，root-正常，root-空，正常-root，正常-正常，正常-空，空-root，空-正常，空-空
+  
+   #####20121206
+	$file_name;
+	$pathv=0;
+	if ($path0 ne "NULL" ||$path1 ne "NULL"){	#path0非空，或path1非空。共8种可能
+		if ($path0 eq "root"|| $path1 eq "root"){ 	#共5种可能，若path0为根path1为空或正常，或path0为空或正常path1为根，或path0path1均为根（这种情况理论上不对，应该单独考虑）备注：此分支条件目前只考虑了path0与path1其中一种为根的情况。
+			$file_name=sprintf($ver_f."-root");
+			$pathv=1;
+		}
+		elsif ($path0 eq "NULL"){	#若path0为空，path1正常
+			$file_name=sprintf($ver_f."-".$path1);
+			$pathv=3;
+		}
+		elsif ($path1 eq "NULL"){	#path0正常，若path1为空
+			$file_name=sprintf($ver_f."-".$path0);
+			$pathv=2;
+		}
+		else{	#若path0为正常，path1为正常
+			$file_name=sprintf($ver_f."-".$path0."-".$path1);
+			$pathv=4;
+		}            
+		$file_name=~s/\//_/g;
+	}
+	
+        $temp_source0= sprintf($dbdir.$file_name.".graph");
+        $temp_source_zoom= sprintf($dbdir."zoom_".$file_name.".graph");
+# print("vv".$temp_source0."vv");
+
+    ##20130117
+        $temp_source1= sprintf($dbdir.$file_name.".svg");
+        $temp_source_1= sprintf($dbdir.$file_name."temp.svg");#20130308
+        $temp_source1_zoom= sprintf($dbdir."zoom_".$file_name.".svg");
+        $temp_source_1_zoom= sprintf($dbdir."zoom_".$file_name."temp.svg");#20130308
+ 
+   #####20121206
+	if (-e $temp_source1 || -e $temp_source_1 ||-e $temp_source1_zoom || -e $temp_source_1_zoom ){	#如果存在.svg或temp.svg或zoom_.svg或zoom_temp.svg
+		if($zoom_module==0){	#若不需要放大功能
+			if(!-e $temp_source1 && -e $temp_source_1 ){ 	#如果不存在.svg，但存在temp.svg，则根据temp.svg画.svg
+				system("$temp_pic $temp_source_1 $temp_source1 $code_url $ver_v $note_url");#20130308
+			}
+			elsif(!-e $temp_source1 && !-e $temp_source_1 && -e $temp_source0 ){	#如果不存在.svg与temp.svg，但存在.graph，则先生成temp.svg再生成.svg
+				system("dot -Tsvg $temp_source0 -o $temp_source_1"); #20120923	#由.graph生成temp.svg
+				system("$temp_pic $temp_source_1 $temp_source1 $code_url $ver_v $note_url");#20130308	#由temp.svg生成.svg
+			}
+			elsif(!-e $temp_source1 && !-e $temp_source_1 && !-e $temp_source0){	#如果不存在.svg，不存在temp.svg，且不存在.graph，则根据情况依次生成。备注：理论上9种情况，但path0为空且path1为空的情况不考虑，此处实际为8种。
+				if ($pathv==4){	#如果path0正常path1正常
+					system("$temp_sh -2 $temp_source01 -d $path0 $path1 -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+				}
+				elsif($pathv==1){	#共5种情况。如果path0path1有一种为root根
+					system("$temp_sh -2 $temp_source01 -d -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle");
+				}
+				elsif($pathv==2){	#如果path0正常path1为空
+					system("$temp_sh -2 $temp_source01 -d $path0 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+				}
+				elsif($pathv==3){	#如果path0为空path1正常
+					system("$temp_sh -2 $temp_source01 -d $path1 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+				}
+				system("dot -Tsvg $temp_source0 -o $temp_source_1"); #20120923
+				system("$temp_pic $temp_source_1 $temp_source1 $code_url $ver_v $note_url");#20130308				
+			}
+		}
+		else{#如果需要放大功能
+			if(!-e $temp_source1_zoom && -e $temp_source_1_zoom){	#如果zoom_.svg不存在，但zoom_temp.svg存在，则根据zoom_temp.svg画zoom_.svg
+				system("$temp_pic $temp_source_1_zoom $temp_source1_zoom $code_url $ver_v $note_url");#20130308
+			}
+			elsif(!-e $temp_source1_zoom && !-e $temp_source_1_zoom && -e $temp_source_zoom){	#如果zoom_.svg不存在，zoom_temp.svg不存在，但zoom_.graph存在，则根据zoom_.graph依次生成zoom_.svg。
+				system("dot -Tsvg $temp_source_zoom -o $temp_source_1_zoom"); #20120923
+				system("$temp_pic $temp_source_1_zoom $temp_source1_zoom $code_url $ver_v $note_url");#20130308			
+			}
+			elsif(!-e $temp_source1_zoom && !-e $temp_source_1_zoom && !-e $temp_source_zoom && -e $temp_source0){	#如果zoom_.svg不存在，zoom_temp.svg不存在，zoom_.graph不存在，但.graph存在，则根据.graph生成zoom_.graph再依次生成zoom_.svg
+				if ($pathv==4){	#如果两个路径都正常，则都需要放大
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 $path1");
+				}
+				elsif($pathv==2){	#如果path0正常path1为空，则只放大path0的部分，生成zoom_.graph
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 full");
+				}
+				elsif($pathv==3){	#如果path0为空path1正常。则只放大path1的部分，生成zoom_.graph
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path1 full");
+				}
+				system("dot -Tsvg $temp_source_zoom -o $temp_source_1_zoom"); #20120923	生成zoom_.graph后，生成zoom_temp.svg
+				system("$temp_pic $temp_source_1_zoom $temp_source1_zoom $code_url $ver_v $note_url");#20130308	#然后根据zoom_temp.svg生成zoom_.svg
+			}
+			elsif(!-e $temp_source1_zoom && !-e $temp_source_1_zoom && !-e $temp_source_zoom && !-e $temp_source0){	##如果zoom_.svg不存在，zoom_temp.svg不存在，zoom_.graph不存在，且.graph不存在，即未画过原图也未画过发大图，则先画原图再画放大图。
+				if ($pathv==4){	#如果path0正常path1正常，则都需要放大。
+					system("$temp_sh -2 $temp_source01 -d $path0 $path1 -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 $path1");
+				}
+				elsif($pathv==2){	#如果path0正常path1为空，则只放大path0的部分，生成zoom_.graph
+					system("$temp_sh -2 $temp_source01 -d $path0 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 full");
+				}
+				elsif($pathv==3){	#如果path0为空path1正常，则只放大path1的部分，生成zoom_.graph
+					system("$temp_sh -2 $temp_source01 -d $path1 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path1 full");
+				}
+				elsif($pathv==1){	#共5种情况。即path0path1有一种为root根。备注：在放大图功能中，此种情况是否需要考虑？写下此分支以备日后扩展。
+					system("$temp_sh -2 $temp_source01 -d -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle");
+				}
+				system("dot -Tsvg $temp_source_zoom -o $temp_source_1_zoom"); #20120923	生成zoom_.graph后，生成zoom_temp.svg
+				system("$temp_pic $temp_source_1_zoom $temp_source1_zoom $code_url $ver_v $note_url");#20130308	#然后根据zoom_temp.svg生成zoom_.svg
+			}
+		}
+	}
+	
+	else{	#如果不存在temp.svg，且不存在.svg且不存在，且不存在zoom_temp.svg，且不存在zoom_.svg  
+		if(!-e $temp_source0){	#如果.graph文件不存在，则生成.graph
+			if ($pathv==4){	#如果path0正常path1正常
+				system("$temp_sh -2 $temp_source01 -d $path0 $path1 -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+			}
+			elsif($pathv==1){	#共5种情况。如果path0path1有一种为root根
+				system("$temp_sh -2 $temp_source01 -d -o $temp_source0 $wacth $ver_v $ver_a $call $graph_moudle");
+			}
+			elsif($pathv==2){	#如果path0正常path1为空
+				system("$temp_sh -2 $temp_source01 -d $path0 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+			}
+			elsif($pathv==3){	#如果path0为空path1正常
+				system("$temp_sh -2 $temp_source01 -d $path1 -o $temp_source0  $wacth $ver_v $ver_a $call $graph_moudle"); #20120923
+			}
+		}
+
+		if($zoom_module!=0){	#如果需要放大功能，则进行放大处理
+			if(!-e $temp_source_zoom){	#如果zoom_.graph不存在，则根据.graph生成zoom_.graph
+				if ($pathv==4){	#如果两个路径都正常，则都需要放大
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 $path1");
+				}
+				elsif($pathv==2){	#如果path0正常path1为空。则只放大path0的部分，生成zoom_.graph
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path0 full");
+				}
+				elsif($pathv==3){	#如果path0为空path1正常。则只放大path1的部分，生成zoom_.graph
+					system("$temp_zoom $temp_source0 $temp_source_zoom $zoom_module $path1 full");
+				}
+			}
+			system("dot -Tsvg $temp_source_zoom -o $temp_source_1_zoom"); #20120923
+			system("$temp_pic $temp_source_1_zoom $temp_source1_zoom $code_url $ver_v $note_url");#20130308
+		}
+		else{	#若不需要放大功能，则直接根据.graph生成temp.svg和.svg
+# print(" ".$temp_source0." ".$temp_source_1." ".$code_url);
+			system("dot -Tsvg $temp_source0 -o $temp_source_1"); #20120923
+			system("$temp_pic $temp_source_1 $temp_source1 $code_url $ver_v $note_url");#20130308
+		}
+	}
+	
+	my $oo=time()-$oldtime;
+	print "run time is $oo second\n";      
+		
+	if ($zoom_module==1 && (($path0 ne "" && $path0 ne "*") ||($path1 ne "" && $path1 ne "*"))){	#如果需要放大功能能，且不是关于根目录root的路径，从缓存目录中取图
+		print (" <embed src=\"",$temp_source2,"zoom_",$file_name,".svg\"  style=\"margin:0 10px 0 0;\"/>\n ");
+	}
+	else{	#如果不需要放大功能或是关于根目录root的路径
+		print (" <embed src=\"",$temp_source2,$file_name,".svg\"  style=\"margin:0 10px 0 0;\"/>\n ");
+	}
+	print("<hr>\n");
+}

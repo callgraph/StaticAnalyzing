@@ -1,0 +1,169 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+@docxygen=("","","","","","","linux-3.7.1","x86_32","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.1/","http://192.168.2.125/doxygen_kernel/linux-3.7.2/html/files.html","linux-3.7.1","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.1/","http://192.168.2.125/doxygen_kernel/linux-3.7.1/html/files.html","linux-3.7.1","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.1/","http://192.168.2.125/doxygen_kernel/linux-3.7.1/html/files.html","linux-3.7.2","x86_32","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.2/","http://192.168.2.125/doxygen_kernel/linux-3.7.2/html/files.html","linux-3.7.2","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.2/","http://192.168.2.125/doxygen_kernel/linux-3.7.2/html/files.html","linux-3.7.2","x86_32","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.2/","http://192.168.2.125/doxygen_kernel/linux-3.7.2/html/files.html","linux-3.7.2","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.7.2/","http://192.168.2.125/doxygen_kernel/linux-3.7.2/html/files.html","linux-3.5.4","x86_32","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.5.4/","http://192.168.2.125/doxygen_kernel/linux-3.5.4/html/files.html","linux-3.5.4","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.5.4/","http://192.168.2.125/doxygen_kernel/linux-3.5.4/html/files.html","linux-3.8.13","x86_32","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.8.13/","http://192.168.2.125/doxygen_kernel/linux-3.8.13/html/files.html","linux-3.8.13","x86_64","real","doxygen","http://192.168.2.125/lxr/lxr-code/linux-3.8.13/","http://192.168.2.125/doxygen_kernel/linux-3.8.13/html/files.html"
+);
+$length=@docxygen;
+sub gccAnalyser{   
+#20160323
+
+print("<form memethod=get action=\"gccAnalyser\" onsubmit=\"return onSubmit()\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+print("<input type=\"hidden\" name=\"t\" value=\"",$ENV{'QUERY_STRINGTID'},"\">");
+print("linux version: <input type=text id=\"l_ver\" name = \"l_ver\" ","value=\"",$l_ver,"\" size=20 >\n");
+print("function path: <input type=text id=\"f_path\" name = \"f_path\" ","value=\"",$f_path,"\" size=20 >\n");
+print("function name: <input type=text id=\"f_name\" name =\"f_name\" ","value=\"",$f_name,"\" size=20 >\n");
+print("<input type=submit value=\"gccAnalyser\">\n","</form>\n");
+#print("n name: <input teype=text name=\"exception_type\" ","value=\"",$e_type,"\" size=20 >\n");
+=print("stat type:
+<select name=\"stat_type\">  
+  <option value ='frequency'>frequency</option>  
+  <option value ='mean'>mean</option>  
+  <option value='std'>std</option>  
+</select>
+"
+);
+
+print("start time(%): <input type=text id=\"s_time\" name =\"s_time\"","value=\"",$s_time,"\" size=5 >\n");
+print("end time(%): <input type=text id=\"e_time\" name = \"e_time\"","value=\"",$e_time,"\" size=5 >\n");
+print("interval(1E9): <input type=text id=\"interval\" name = \"interval\"","value=\"",$interval,"\" size=5 >\n");
+=cut
+if ($f_path eq "" || $f_name eq "" || $l_ver eq "")
+{
+#   print("<script>alert('the input can not be empty!');</script>");
+}
+else
+{
+    $info = "$f_path1";
+    @personal = split(/\~/,$info);
+    $f0 = @personal[0];
+    $f1 = @personal[1];
+    $f2 = @personal[2];
+    $f3 = @personal[3];
+    @dirname = split(/\./,$f3);
+    $f4 = @dirname[0];
+#    print"$f4";
+    #my $url = $config->baseurl;
+#start call
+    (my $url = $config->baseurl) =~ s!/*$!/!;
+
+    $url =~ s/([\?\&\;\=\'\"])/sprintf('%%%02x',(unpack('c',$1)))/ge;
+#    print "$url";
+#middle
+    $ttbasurl=sprintf("http://192.168.2.125/lxr");
+    $temp_sh=$config->sourceroot;
+    $temp_shrb=$temp_sh;
+    $temp_shrb=~s/source\//lxr\/.\/gccprocess.py/;
+
+    $temp_shsp=$temp_sh;
+    $temp_shsp=~s/source\//lxr\/source1/;
+    $temp_shy=$temp_sh;
+    $temp_shy=~s/source/lxr/;
+#print($ENV{'QUERY_STRING'});
+    print "$temp_shrb";
+    $temp_shsvg=$temp_sh;
+#    $temp_shsvg=~s/source\//lxr\/.\/version.rb/;   
+#end call
+    #$py_source = "\/usr\/local\/share\/cg-rtl\/lxr\/gccAny\/";
+    $temp_html = sprintf($py_source.".\/process.py ".$ver_v." ".$l_ver." ".$f_path." ".$f_name." ".$ver_a);
+#    $html_name ="/tmp/diff_area"."/".$ver_v."/".$l_ver."/".$f_path1."/".$f_name.".html";
+#    $html_name = $temp_shy."gccdiff"."/".$ver_v."/".$l_ver."/".$f_path."/".$f_name.".html";
+ #   if()
+#{
+#}
+#    else
+#{
+#}
+#    system("/usr/local/share/cg-rtl/lxr/gccAny/./process_lxue.py linux-3.5.4 linux-3.7.1 drivers/video/console/vgacon.c vga_vesa_unblank x86_32");#Operation not permitted
+#    $args = "python "."/home/lxue/demo_code/process_lxue.py ".$ver_v." ".$l_ver." ".$f_path." ".$f_name." ".$ver_a;
+ #   $args = "python "."/usr/local/share/cg-rtl/lxr/gccAny/process_lxue.py ".$ver_v." ".$l_ver." ".$f_path." ".$f_name." ".$ver_a;
+#system("/usr/local/share/cg-rtl/lxr/ python ./process_lxue.py linux-3.5.4 linux-3.7.2 drivers/video/console/vgacon.c vga_vesa_unblank x86_32"); 
+    system("$temp_shrb $ver_v $l_ver $f_path $f_name $ver_a");
+   # system("$temp_shsvg");
+#    system("$temp_shrb $ver_v $l_ver $f_path $f_name $ver_a");
+ #  print system("python gccAny/process_lxue.py $ver_v $l_ver $f_path $f_name $ver_a");
+#    print "$temp_html";#Operation not permitted
+  #  print "$html_name";
+    print("<iframe src=\"http://192.168.2.125/lxr/gccdiff/",$ver_v,"/",$l_ver,"/",$f_path,"/",$f_name,".html\" style=\"width:4000px;height:1000px;\"/></iframe>"); 
+   # print("<iframe src=\"http://192.168.2.125/lxr/gccdiff/",$ver_v,"/",$l_ver,"/",$f_path,"/",$f_name,".html\" style=\"margin:0 10px 0 0;\"/></iframe>\n ");
+#system("python gccAny/process_lxue.py $ver_v $l_ver $f_path $f_name $ver_a");#permission 
+    # ".$ver_f."
+ #   print $args;
+}
+
+}
+
+httpinit;
+if (!$ENV{'QUERY_STRINGFID'}) #added from 20150609 by jdi -- default argvs
+{
+	$ver_v=$ENV{'QUERY_STRINGSID'};
+	$ver_a=$ENV{'QUERY_STRINGPID'};
+	$ver_f="R";
+} 
+else
+{
+	$ver_v=$ENV{'QUERY_STRINGSID'};
+	$ver_a=$ENV{'QUERY_STRINGPID'};
+	$ver_f=$ENV{'QUERY_STRINGFID'};
+	if($ver_f eq "real")
+	{
+		$ver_f="R";
+	}
+}
+=begin
+if(!$ENV{'QUERY_STRINGFID'}||!$ENV{'QUERY_STRINGPID'}||!$ENV{'QUERY_STRINGSID'})
+{
+	$ver_v="linux-3.5.4";
+	$ver_a="x86_32";
+	$ver_f="real";
+}
+=cut
+$f_path =$HTTP->{'param'}->{'f_path'};
+### for the pic_name can't contain character '/',we replace '/' by '~'
+$f_path1 = $f_path;
+$f_path1 =~ s/\//~/g; 
+$f_name =$HTTP->{'param'}->{'f_name'};
+$l_ver = $HTTP->{'param'}->{'l_ver'};
+#$s_time=$HTTP->{'param'}->{'s_time'};
+#$e_time=$HTTP->{'param'}->{'e_time'};
+#$interval=$HTTP->{'param'}->{'interval'};
+$sid=$HTTP->{'param'}->{'v'};
+makeheader('gccAnalyser');
+&gccAnalyser;
+makefooter('gccAnalyser');
+
+httpclean;
+

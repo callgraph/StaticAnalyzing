@@ -1,0 +1,173 @@
+#!/usr/bin/perl 
+# $Id: find,v 1.3 1998/04/30 11:58:16 argggh Exp $
+
+# find   --	Find files
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+#use lib 'lib/';
+#use LXR::Common;
+#use LXR::Config;
+#use strict;
+#use LXR::Common;
+#use LXR::Markup;
+#use LXR::Template;
+#use Local;
+#use FileHandle;
+
+#use CGI qw(:all); 
+my $path0=$ARGV[3];
+my $path1=$ARGV[4];
+my $sourceroot=$ARGV[6];
+my $sh_ruby_source=$ARGV[7];
+my $che1=$ARGV[5];
+my $baseurl=$ARGV[8];
+my $ddir=$ARGV[9];
+my $ver_v=$ARGV[0];
+my $ver_a=$ARGV[1];
+my $ver_f=$ARGV[2];
+my $code_url=$ARGV[10];
+my $note_url=$ARGV[11];
+my $dbdir;
+   $dbdir=sprintf($ddir."\/".$ver_v."\/".$ver_a."\/");
+#my $c1,$temp_sh,$temp_pic,$temp_zoom,$zoom_module,$graph_moudle;
+#my $temp_source01,$temp_source1,$temp_source2;
+
+#my $temp_source1_zoom,$temp_source_1,$temp_source_1_zoom;
+#my $watch,$call;
+#my $pathv;
+#my $file_name;
+	print("<br>Start of Script \"diffe-perl\"<br>");
+	print ("<br>argv_0:".$ARGV[0]."<br>argv_1:".$ARGV[1]."<br>argv_2:".$ARGV[2]."<br>argv_3:".$ARGV[3]."<br>argv_4:".$ARGV[4]."<br>argv_5:".$ARGV[5]."<br>argv_6:".$ARGV[6]."<br>argv_7:".$ARGV[7]."<br>argv_8:".$ARGV[8]."<br>argv_9:".$ARGV[9]."<br>argv_10:".$ARGV[10]."<br>argv_11:".$ARGV[11]."<br>argv_12:".$ARGV[12]);
+	print("<br>FirstVersion=".$ver_v."<br>Platform=".$ver_a."<br>FolderType=".$ver_f."<br>Path0=".$path0."<br>Path1=".$path1."<br>SecondVersion=".$che1."<br>ZoomCheckbox=".$code_url."<br>baseurl=".$baseurl."<br>");
+    if ($code_url ne "1") {$c1=0;}     else {$c1=1;}
+
+#printf("1111".$sh_ruby_source);
+
+
+#      $temp_sh=sprintf($Conf->htmlhead);
+#      $temp_out=$temp_sh;
+#    $cache_filename=$temp_sh;
+#      $cache_filename=~s/\/template-head//;
+#      $cache_filename=$cache_filename."\/callgraph.appcache";
+#      $temp_out=~s/\/http\/template-head//;
+#      $temp_sh=~s/template-head/.\/callgraphweb.rb/;
+#	$temp_sh=sprintf($sh_ruby_source.".\/auto_diff_graph.sh");    
+	$temp_sh=sprintf($sh_ruby_source.".\/auto_diff_graph_new.sh");    
+#	$temp_sh=sprintf("\/home\/jdi\/ysx\/auto_diff_graph.sh");    
+#      $temp_pic=sprintf($Conf->htmlhead);
+#      $temp_pic=~s/template-head/.\/pic.rb/;#20130308
+       $temp_pic=sprintf($sh_ruby_source.".\/pic.rb");     
+#      $temp_zoom=sprintf($Conf->htmlhead);
+#      $temp_zoom=~s/template-head/.\/amplify.rb/;
+       $temp_zoom=sprintf($sh_ruby_source.".\/amplify.rb");
+      $graph_moudle=$ver_f;
+      $zoom_module=$c1;
+	print("**".$zoom_module."**",$che1."**"); 
+ ##20130117 end
+ #        $temp_source01=sprintf($Conf->sourceroot); 
+	$temp_source01=sprintf($sourceroot."\/".$ver_v."\/".$ver_a."\/linux\/");
+	my $oldtime = time();
+#         $temp_source0=$temp_source01;
+#         $temp_source0=~s/$temp_out//;
+#         $temp_source0=~s/linux\///;
+#         $temp_source1=sprintf($Conf->baseurl);
+	$temp_source1=$baseurl;
+#         $cache_manifest=sprintf("\/lxr".$temp_source0);
+#         $wacth=sprintf($temp_source1."watchfuc?v=");#"http://localhost/lxr/http/watchfuc?v="     
+	$wacth=sprintf($temp_source1."/watchlist/?");#"http://localhost/lxr/http/watchfuc?v=" 
+#         $call=sprintf($temp_source1."callgraph?v=");#"http://localhost/lxr/http/watchfuc?v="     
+	$call=sprintf($temp_source1."/call/?");#"http://localhost/lxr/http/watchfuc?v=" 
+
+#         $temp_source1=~s/\/http\///;
+#         $temp_source2=sprintf($temp_source1.$temp_source0);
+	$temp_source2=sprintf($temp_source1."\/source1"."\/".$ver_v."\/".$ver_a."\/");
+        
+  
+   #####20121206
+  
+	$file_name;
+	$pathv=0;
+	if ($path0 eq "NULL"){
+		$path0= $path1;
+		$path1= sprintf("NULL");
+	}
+	if ($path0 eq "NULL" && $path1 eq "NULL"){
+			$file_name=sprintf($ver_f."-root");
+			$pathv=1;
+	} elsif ($path0 ne "NULL" ||$path1 ne "NULL"){
+		if ($path0 eq "root"|| $path1 eq "root"){ 
+			$file_name=sprintf($ver_f."-root");
+			$pathv=1;
+		}
+		elsif ($path0 eq "NULL"){
+			$file_name=sprintf($ver_f."-".$path1);
+			$pathv=3;
+		}
+		elsif ($path1 eq "NULL"){
+			$file_name=sprintf($ver_f."-".$path0);
+			$pathv=2;
+		}
+		else{
+			$file_name=sprintf($ver_f."-".$path0."-".$path1);
+			$pathv=4;
+		}            
+		$file_name=~s/\//_/g;
+	}
+	
+        $temp_source0= sprintf($dbdir.$file_name.".graph");
+        $temp_source_zoom= sprintf($dbdir."zoom_".$file_name.".graph");
+	print("vv".$temp_source0."vv");
+
+    ##20130117
+        $temp_source1= sprintf($dbdir.$file_name.".svg");
+        $temp_source_1= sprintf($dbdir.$file_name."temp.svg");#20130308
+        $temp_source1_zoom= sprintf($dbdir."zoom_".$file_name.".svg");
+        $temp_source_1_zoom= sprintf($dbdir."zoom_".$file_name."temp.svg");#20130308
+	if ($code_url eq "1") {
+		$file_name= sprintf("zoom_".$file_name);
+	}
+	$GraphFilenameA= sprintf($ddir."\/".$ver_v."\/".$ver_a."\/".$file_name.".graph");
+	$GraphFilenameB= sprintf($ddir."\/".$che1."\/".$ver_a."\/".$file_name.".graph");
+        $PathPrefix= sprintf("\/usr\/local\/share\/cg-rtl\/lxr\/source1\/");
+        $LinkPrefix= sprintf($ddir."\/");
+        $PathFileName= sprintf("diffe_".$ver_v."_".$che1."\/".$ver_a."\/".$file_name.".svg");
+        $SVG_Filename= sprintf($PathPrefix.$PathFileName);
+        $SVG_Filelink= sprintf($baseurl."\/source1\/".$PathFileName);
+	print ("<br>diffe-perl: temp_sh=".$temp_sh."<br>ddir=".$ddir."<br>temp_source1=".$temp_source1."<br>temp_source_1=".$temp_source_1."<br>temp_source1_zoom=".$temp_source1_zoom."<br>temp_source_1_zoom=".$temp_source_1_zoom."<br>temp_pic=".$temp_pic."<br>GraphFilenameA=".$GraphFilenameA."<br>GraphFilenameB=".$GraphFilenameB."<br>SVG_Filename=".$SVG_Filename."<br>SVG_Filelink=".$SVG_Filelink."<br>"); 
+   #####20121206
+	if (! -e $SVG_Filename ) {
+		if ($pathv eq 4) {
+		@args = ("ruby", "$temp_sh", "$ver_v", "$ver_f", "$ver_a", "$path0", "$path1", "$che1", "$ddir\/", "$baseurl", "$code_url"); # for new script - auto_diff_graph_new.sh
+		#print ("<br>pathv=".$pathv."<br>");
+		} else {
+		@args = ("ruby", "$temp_sh", "$ver_v", "$ver_f", "$ver_a", "$path0", "$che1", "$ddir\/", "$baseurl", "$code_url"); # for new script - auto_diff_graph_new.sh
+		#print ("<br>pathv=".$pathv."<br>");
+		}
+		system(@args);
+	}
+	
+	my $oo=time()-$oldtime;
+	print "Run time is $oo second\n";      
+		
+	print (" <embed src=\"",$SVG_Filelink,"\"  style=\"margin:0 10px 0 0;\"/>\n ");
+	print("<hr>\n");
+

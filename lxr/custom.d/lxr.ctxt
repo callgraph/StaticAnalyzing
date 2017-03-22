@@ -1,0 +1,18 @@
+# -*- mode: perl -*-
+# Context file associated with lxr.conf
+# Created 2013-11-06 09:55:01 UTC
+# Strictly internal, do not play with content
+$context_created = 2;
+
+$cardinality = 'm';
+$dbpolicy = 't';
+$dbengine = 'm';
+$dbuser = 'lxr';
+$dbpass = 'lxrpw';
+$dbprefix = 'lxr_';
+$servertype = 'D';
+$scheme = '';
+$hostname = '//localhost';
+$port = '80';
+$virtrootbase = '';
+$virtrootpolicy = 'b';

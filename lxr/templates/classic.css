@@ -1,0 +1,633 @@
+/*
+ *	$Id: classic.css,v 1.4 2013/01/24 15:09:53 ajlittoz Exp $
+ */
+
+/* Some definitions are grouped together to allow modification
+ * of attributes for related classes in a single location
+ */
+
+/* The following is for debugging templates and style sheets */
+/* td{border: solid thin red} p{border:solid thin blue} */
+
+/********************/
+/* Font definitions */
+/********************/
+  BODY
+, A.dirfile		/* filenames in directory view */
+, A.dirfolder
+{ font-family: Baskerville, Times, "Times New Roman", serif
+}
+
+  .main
+, .banner
+, .dirrow1
+, .dirrow2
+, .modes		/* mode switches */
+, .modes-sel
+, BUTTON
+, .varlink		/* 'variables' switches */
+, .var-sel
+, .treelink		/* tree' switches */
+, .tree-sel
+, .lxrdesc
+, SELECT
+, TD.identline
+, TD.searchline
+{ font-family: "Gill Sans", Helvetica, Arial, sans
+}
+
+  PRE
+, .filecontent
+{ font-family: monospace
+}
+
+/*****************/
+/* global styles */
+/*****************/
+  BODY
+{ color: #000000
+; background-color: white
+}
+
+  .error
+{ text-align: center
+; color: red
+}
+
+/* general link behavior */
+  A
+{ text-decoration: none
+}
+  A:hover
+{ text-decoration: underline
+}
+  A:visited
+{
+}
+
+/* side cells of tables */
+  TD.leftmost
+{ text-align: left
+}
+  TD.rightmost
+{ text-align: right
+}
+
+  .compact
+{ padding: 0
+; margin: 0
+}
+
+/***********************/
+/* headers and footers */
+/***********************/
+  .header
+, .footer
+{ text-align: center
+; border: none
+; width: 100%
+}
+  .header TD
+, .footer TD
+{ padding: 0
+}
+
+  .header .leftmost
+, .footer .rightmost
+{ width: 1%
+; white-space: nowrap
+}
+
+  .header.compact TD.treelink
+{ width: 30%
+}
+
+  .main
+{ color: #000066
+; font-size: 24pt
+; font-weight: bold
+}
+
+  H1.main
+{ font-size: 18pt
+; color: black
+}
+
+  H2.main
+{ font-size: 14pt
+}
+
+/* banner - displayed file/folder path */
+  .banner
+{ font-size: 14pt
+; color: #339966
+; text-align: center
+}
+
+  .footer P
+, .footer ADDRESS
+{ padding: 0
+; margin: 0
+}
+
+  TD.rightmost.compact
+{ width: 24%
+}
+
+  .rightmost.compact FORM
+{ display: inline-block
+}
+
+  .rightmost.compact BUTTON
+{ width: 9em
+/* ; display: inline-block */
+}
+
+/************************/
+/* links to other trees */
+/************************/
+  .treelink
+, SPAN.tree-sel
+{ font-size: 10pt
+}
+
+  A.treelink
+, A.treelink:visited
+{ color: silver
+; background-color: #ffdddd
+; font-weight: bold
+; padding: 0 5pt
+; border: thin solid red
+}
+
+  .treelink.compact *
+{ display: inline-block
+; width: 64px
+; padding: 0 2pt
+; text-align: center
+}
+
+ A.treelink
+{ text-decoration: none
+}
+
+  A.treelink:hover
+{ background-color: #ffdddd
+; text-decoration: none
+; color: red
+}
+
+  SPAN.tree-sel
+{ font-style: italic
+; font-weight: bold
+; color: white
+; background-color: red
+; padding: 0 5pt
+; border: thin solid white
+}
+
+/**********************/
+/* menus, "variables" */
+/**********************/
+  .modes
+, .varlink
+, SPAN.modes-sel
+, SPAN.modes-dis
+, SPAN.var-sel
+{ font-size: 10pt
+}
+
+  .modes
+, .varlink
+, A.modes
+, A.varlink
+, A.modes:visited
+, A.varlink:visited
+, .modes BUTTON
+, SELECT
+, OPTION.varlink
+/* , .vars BUTTON */
+{ color: blue
+}
+
+  .modes BUTTON
+, OPTION.varlink
+, OPTION.var-sel
+/* , .vars BUTTON */
+{ background-color: #eeeeee
+}
+
+  A.modes
+, A.varlink
+{ text-decoration: none
+}
+  A.modes:hover
+, A.varlink:hover 
+{ background-color: #ddffcc
+; text-decoration: none
+}
+
+/* currently selected mode/variable */
+  SPAN.modes-sel
+, SPAN.modes-dis
+, SPAN.var-sel
+{ font-style: italic
+; font-weight: bold
+; background-color: #cceeff
+}
+
+  FORM.modes
+, FORM.modes-sel
+, FORM.modes-dis
+, FORM.vars
+{ margin: 1px
+; padding: 1px
+}
+  .modes-sel BUTTON
+, .modes-dis BUTTON
+{ font-style: italic
+/* ; font-size: 9pt */
+/*; font-weight: bold*/
+; background-color: #cceeff
+}
+  .modes BUTTON
+{ font-style: normal
+/* ; font-size: 8pt */
+}
+
+  .vars BUTTON
+{ /*font-style: normal
+;*/ font-size: 11pt
+}
+  SELECT
+{ background-color: white
+}
+  OPTION.var-sel
+{ color: black
+; font-weight: bold
+; font-style: italic
+}
+
+/******************/
+/* directory view */
+/******************/
+/** directory listing header **/
+  .dirheader
+{ background-color: #aaddff
+; color: #000000
+}
+
+/** directory listing area **/
+  .dircontent
+{ width: 100%
+; border: none
+}
+
+  .dircontent TH
+{ border-right: 1pt solid white
+; border-left: none
+; border-top: none
+; border-bottom: 1pt solid blue
+; text-align: center
+}
+
+/* "odd" lines (three at once) */
+  .dirrow1
+{ background-color: white
+; font-size: 10pt
+}
+/* "even" lines (three at once) */
+  .dirrow2
+{ background-color: #eeeeee
+; font-size: 10pt
+}
+
+  .dirrow1 TD
+, .dirrow2 TD
+{ border-right: thin solid #999999
+}
+
+/** individual cell formatting **/
+/* link to file or folder */
+  A.dirfile
+, A.dirfolder
+{ font-size: 12pt
+}
+  A.dirfile
+{ color: black
+}
+  A.dirfolder
+{ color: navy
+}
+
+  .diricon
+, .dirname
+, .dirsize
+, .dirtime
+, .dirindex
+, .dirindexinvalid
+{ width: 1%
+; white-space: nowrap
+}
+
+  .diricon IMG
+{ border: none
+}
+
+  TD.dirname
+{ text-align: left
+; padding: 0 1pt 0 2pt
+}
+
+  TD.dirsize
+{ text-align: right
+; padding: 0 1pt 0 2pt
+}
+
+  TD.dirtime
+, TD.dirindex
+, TD.dirindexinvalid
+{ text-align: right
+; padding: 0 1pt 0 5pt
+}
+
+  TD.dirindexinvalid
+{ background-color: #ffccdd
+; text-align: center
+}
+
+  TD.dirdesc
+{ text-align: left
+; padding-left: 5pt
+}
+
+  TD.dirdesc P
+{ padding: 0
+; margin: 0
+}
+
+/* description extracted from README(.txt) file */
+  .lxrdesc
+{ color: #666666
+; font-style: italic
+}
+
+/*************/
+/* file view */
+/*************/
+/* most recent addition to file */
+  .annot-cur
+{ background-color: #ffcc88
+}
+/* alternating annotation background */
+  .annot0
+{ background-color: white
+}
+  .annot1
+{ background-color: #ffeedd
+}
+
+/* the line number */
+  .fline
+{ background-color: silver
+}
+
+/* link - the line number */
+  A.fline
+{ text-decoration: none
+}
+
+/* link to other site (http, ftp and mailto) */
+  A.offshore {
+}
+
+/* link to the include file */
+  A.include
+{ color: #669966
+}
+
+/* link - identifier search */
+  .fid
+{ color: #669966
+}
+
+/* general file font etc. */
+  pre.filecontent {
+}
+
+/* Syntactic highlighting*/
+/* comments */
+  .comment
+{ color: #808080
+}
+/* strings */
+  .string
+{ color: #0000CC
+}
+/* reserved words */
+  .reserved
+{ color: #800000
+}
+
+/*************************/
+/* ident. search results */
+/* and free-text search  */
+/*************************/
+
+  TABLE.identdef
+, TABLE.identref
+, TABLE.searchref
+{ border: thin solid black
+; border-spacing: 0
+; border-collapse: collapse
+}
+
+  .searchref TH
+, .identref TH
+{ /*border-right: none
+; border-left: none
+; border-top: 1pt solid black
+; */border/*-bottom*/: 1pt solid black
+; text-align: center
+; background-color: #aaddff
+}
+
+  .identdef TH
+{ color: red
+}
+
+  .identdef TR
+, .identref TR
+/*, .searchref TR*/
+{ border-top: thin solid black
+; border-bottom: thin solid black
+}
+
+  .identdef TD
+, .identref TD
+, .searchref TD
+{ border-top: thin solid black
+; border-bottom: thin solid black
+; border-left: thin solid black
+; padding: 0 3pt
+}
+
+  TD.identfile
+, TD.searchfile
+, TD.searchfilevoid
+{ border-right: thin solid black
+}
+
+  TD.identfile
+, TD.searchfile
+{ border-top: thin solid black
+; border-bottom: none
+}
+
+  TD.searchfilevoid
+{ border-top: none
+; border-bottom: none
+}
+  .identfile A
+, .searchfile A
+{ color: gray
+}
+
+  A.identline
+, A.searchline
+{ text-align: right
+; min-width: 2.5em
+; margin: 0 1pt
+; display: inline-block
+; border: none
+; font-size: 10pt
+}
+
+  .identapprox:before
+{ color: red
+; content: "⁕"	/**/	/* for Unicode (UTF-8) */
+						/* incorrect display under 8-bit character sets */
+/*; content: "±" /**/	/* for ISO-8859-1 */
+/*; content: "÷" /**/	/* other suggestion for ISO-8859-1 */
+
+}
+
+  TR.identline
+, TR.searchline
+{ text-align: left
+}
+
+  TD.identinvalid
+, TD.searchinvalid
+{ background-color: #ffccdd
+}
+
+/* Improve readability on colored background */
+  TD[class~=searchfile][class~=searchinvalid] A
+{ color: black
+}
+
+/*  PRE.searchtext
+{ font-family: FreeMono, monospace
+}*/
+
+  PRE.searchtext SPAN.searchtext
+{ color: red
+; font-weight: bold
+}
+
+/* link to "member of" */
+.search-member
+{ color: #669966
+}
+
+/* link to the file with reference */
+.search-ref {
+}
+
+/* identifier searched (in header) */
+  .identident
+, .searchident
+{ /*font-size: 18pt
+; font-weight: bold
+; */color: blue
+}
+
+/*************/
+/* diff view */
+/*************/
+
+/* reference to the file (in header) */
+.diff-fref {
+}
+
+/* marks like '!!', '<<' etc. */
+.diff-mark
+{ background-color: red
+; color: white
+; font-weight: bold
+}
+
+/* background of differing lines */
+  .diff-left
+{ background-color: #ffccdd
+}
+  .diff-both
+{ background-color: #ffffaa
+}
+  .diff-right
+{ background-color: #ddffdd
+}
+
+/***************/
+/* config view */
+/***************/
+
+  TABLE.conf_section
+{ border: none
+; width: 100%
+; text-align: center
+}
+  .conf_prev
+{ text-align: left
+}
+  .conf_next
+{ text-align: right
+}
+
+  TABLE.config
+{ border: thin solid black
+; border-spacing: 0
+; border-collapse: collapse
+; width: 100%
+}
+
+  .config TH
+{ border: 1pt solid black
+; text-align: center
+; background-color: gray
+; color: white
+}
+
+  .config TD
+{ border: thin solid gray
+}
+
+  TD.conf_parm
+{ padding: 0pt 2pt
+}
+
+  TD.conf_type
+{ text-align: center
+}
+
+  TD.conf_val
+{ overflow: auto
+; padding: 0pt 5pt
+}
+
+  .conf_force
+{ color: red
+; background-color: silver
+}
+

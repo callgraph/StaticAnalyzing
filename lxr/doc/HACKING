@@ -1,0 +1,7 @@
+Hacking LXR
+-----------
+
+The internals of LXR will be explained in an Impementation Manual
+to be provided in the future (not too long I hope).
+
+In the mean time, source code has been heavily commented.

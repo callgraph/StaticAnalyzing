@@ -1,0 +1,121 @@
+#
+#	Web server configuration for LXR root directory
+#
+#	$Id: htaccess-generic,v 1.6 2013/01/21 10:49:36 ajlittoz Exp $
+#
+#	Content of this file is independent of the location of
+#	the LXR root directory.
+#	Need for user-customization should be very limited.
+#	Eventually, access to LXR root directory can be relaxed.
+#	Default is very restrictive.
+#
+# Cannot grant Apache 2.2/2.4 implicit compatibility because Require
+# directive syntax and semantics changed between releases.
+# When updating 2.2 -> 2.4, uncomment 2.4 specific lines
+#@IF	!%Apache24%
+#@	ASK Is your Apache version 2.4 or higher?; 1; yes, no; y, n
+#@	DEFINE	Apache24="%A%"
+#@ENDIF
+
+
+# Enable CGI script execution and use of symlinks
+Options ExecCGI FollowSymlinks
+
+		# up to Apache 2.2
+Order deny,allow
+		# from Apache 2.4
+#	No directive needed
+
+
+# =================================================
+#
+# -----------    Access restrictions    -----------
+#
+
+# Do not allow to list directories content
+# NOTE: remove - sign when debugging LXR installation so that you
+#		can see what's really in the directories.
+Options -Indexes
+
+# Forbid direct access to any file in LXR root and its subdirectories
+<FilesMatch ".">
+		# up to Apache 2.2
+	Deny from all
+		# from Apache 2.4
+#@IF 'y' eq "%Apache24%"
+	Require all denied
+#@ELSE
+#	Require all denied
+#@ENDIF
+</FilesMatch>
+
+# But allow access to style sheets
+<FilesMatch "\.css$">
+		# up to Apache 2.2
+	Allow from all
+		# from Apache 2.4
+#@IF 'y' eq "%Apache24%"
+	Require all granted
+#@ELSE
+#	Require all granted
+#@ENDIF
+</FilesMatch>
+# and graphic files (for icons)
+<FilesMatch "\.(bmp|gif|icon?|jpe?g|png|svg|tiff?)$">
+		# up to Apache 2.2
+	Allow from all
+		# from Apache 2.4
+#@IF 'y' eq "%Apache24%"
+	Require all granted
+#@ELSE
+#	Require all granted
+#@ENDIF
+</FilesMatch>
+
+
+# =================================================
+#
+# ----------- LXR scripts configuration -----------
+#
+#
+<Files ~ (search|source|ident|diff|showconfig)$>
+		# up to Apache 2.2
+	Allow from all
+		# from Apache 2.4
+#@IF 'y' eq "%Apache24%"
+	Require all granted
+#@ELSE
+#	Require all granted
+#@ENDIF
+	#	Access granted to everybody
+
+	# *** mod_perl use ***
+	<IfModule mod_perl.c>
+		SetHandler perl-script
+
+		# Configuration parameters changed between mod_perl versions:
+		<IfDefine MODPERL2>
+			PerlOptions +ParseHeaders
+		# Apache can dispatch execution according to 2 modes.
+		# mod_perl initialization differs slightly:
+			<IfModule prefork.c>
+				PerlHandler ModPerl::RegistryPrefork
+			</IfModule>
+			<IfModule worker.c>
+				PerlHandler ModPerl::Registry
+			</IfModule>
+		</IfDefine>
+
+		<IfDefine !MODPERL2>
+			PerlSendHeader On
+			PerlHandler Apache::Registry
+		</IfDefine>
+
+	</IfModule>
+
+	# *** CGI use ***
+	<IfModule !mod_perl.c>
+		SetHandler cgi-script
+	</IfModule>
+
+</Files>

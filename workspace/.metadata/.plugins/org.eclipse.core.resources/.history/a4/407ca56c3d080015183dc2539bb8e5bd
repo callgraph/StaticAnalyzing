@@ -1,0 +1,138 @@
+package com.wuz.serv.core.ws.impl;
+
+import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+
+//import org.jruby.CompatVersion;
+//import org.jruby.Ruby;
+//import org.jruby.RubyInstanceConfig;
+//import org.jruby.embed.ScriptingContainer;
+//import org.jruby.javasupport.JavaEmbedUtils;
+//import org.jruby.runtime.builtin.IRubyObject;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ibm.db2.jcc.resources.Resources;
+import com.synchrobit.synchrojmx.tools.adaptor.interceptor.Invocable;
+
+//�ں˷�����ͨ����������ȡSVGͼ�ķ���SVGImgService
+
+public class chooseService {
+	
+
+	
+	public String post(String url){
+		chooseService chooServ=new chooseService();
+		//String result = null;
+		String fn="";
+		int timeN=0;
+		String content=null;
+		String filename="plat.js";
+		if(chooServ.FileisExit(filename))
+		{
+			content=chooServ.ReadFile(filename);
+		}
+		return content;
+	}
+
+	
+	public String ReadFile(String fname){
+		String pathname="http://192.168.1.35/lxr/templates/html/html_head_btn_files"+fname;
+		URL url = null;
+		String content=null;
+		File filename=new File(pathname);
+		InputStreamReader reader = null;
+		try {
+			reader = new InputStreamReader(new FileInputStream(filename));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.out.println("fail-35");
+		}
+		BufferedReader br =new BufferedReader(reader);
+		String line="test";
+	
+		try {
+			line=br.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int i=0;
+		String testline="dsy.add";
+		if(line.contains(testline))
+		{
+			char[]c=line.toCharArray();
+			if(c[11]==',')
+				content=line.substring(14);
+		}
+		String cont[]=new Strin;
+		return content;
+	}
+
+  
+
+		
+	public boolean FileisExit(String filename){   //�ļ���
+	      
+		String urlString="http://192.168.1.35/lxr/templates/html/html_head_btn_files"+filename;
+		URL url = null;
+	
+		try {
+			url = new URL(urlString);
+		
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		URLConnection conn = null;
+		try {
+			conn = url.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		
+	
+	     HttpURLConnection urlcon = null;
+		try {
+			urlcon = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+	     String message = urlcon.getHeaderField(0);//�ļ����ڡ�HTTP/1.1 200 OK�� �ļ������� ��HTTP/1.1 404 Not Found��
+	     if (StringUtils.isNotEmpty(message) && message.startsWith("HTTP/1.1 200")) {
+	   //����
+	    	 System.out.println("exit");
+				return true;
+	     }
+		
+		else{
+			System.out.println("not exit");
+			return false;
+		}
+		
+	}		
+}

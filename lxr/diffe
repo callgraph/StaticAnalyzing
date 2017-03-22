@@ -1,0 +1,115 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+sub diffe{        
+print("<form memethod=get action=\"diffe\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+print("Second version: <input type=text name=\"depth\" ","value=\"",$depth,"\" size=10 >\n");
+print("Path0: <input type=text name=\"path0\" ","value=\"",$path0,"\" size=20 >\n");
+print("Path1: <input type=text name=\"path1\" ","value=\"",$path1,"\" size=20 >\n");
+print("<input type=\"checkbox\" name=\"checkbox1\" value=\"1\" $zoombox> zoom\n");
+print("<input type=\"checkbox\" name=\"code\" value=\"1\" $codediffbox> codediff\n");
+print("<input type=submit value=\"showdiff\">\n","</form>\n");
+#$sid=$ENV{'QUERY_STRINGSID'};
+#$pid=$ENV{'QUERY_STRINGPID'};
+        if ( $path0 eq ""){
+                $path0= sprintf("NULL");
+        }
+        if ( $path1 eq "") {
+                $path1= sprintf("NULL");
+        }
+	if ($path0 ne "" and $path1 ne "" and $depth ne "" and $ver_f ne "" ){
+#     		print("showdiff");	
+#	$ttbasurl=sprintf("http://124.16.141.184/lxr");
+	$ttbasurl=sprintf("http://124.16.141.179/lxr");
+	$kern_source_code_root= sprintf("\/mnt\/freenas\/source_code");
+	$temp_sh=$config->sourceroot;
+ 	$temp_shrb=$temp_sh;
+ 	$temp_shrb=~s/source\//lxr\/.\/diffe-perl/;
+ 	$temp_shsp=$temp_sh;
+ 	$temp_shsp=~s/source\//lxr\/source1\//;
+ 	$temp_shy=$temp_sh;
+ 	$temp_shy=~s/source/lxr/;   #danqi
+	if ( $zoombox eq "" ){
+		$zoombox=sprintf("0");
+	}
+	if ( $codediffbox eq "" ){
+		$codediffbox=sprintf("0");
+	}
+#	print("<br>CommandName=".$temp_shrb."<br>FirstVersion=".$ENV{'QUERY_STRINGSID'}."<br>Platform=".$ENV{'QUERY_STRINGPID'}."<br>FolderType=".$ENV{'QUERY_STRINGFID'}."<br>Path0=".$path0."<br>Path1=".$path1."<br>SecondVersion=".$depth."<br>ZoomCheckbox=".$zoombox."<br>codediffbox=".$codediffbox."<br>****".$temp_shsp." ".$temp_shy." ".$ttbasurl." ".$temp_shsp." kern_source_code_root=".$kern_source_code_root."<br>");
+	system("$temp_shrb $ver_v $ver_a $ver_f $path0 $path1 $depth $temp_shsp $temp_shy $ttbasurl $temp_shsp $zoombox $codediffbox $kern_source_code_root");
+	}
+	else
+	{
+		printf("Warning in Script diffe: Command parameter is wrong.");
+#}
+	}
+}
+
+httpinit;
+
+=begin
+if (!$ENV{'QUERY_STRINGSID'} || !$ENV{'QUERY_STRINGPID'} || !$ENV{'QUERY_STRINGFID'})	#add from 20150605 by jdi -- default argvs
+{
+		$ver_v="linux-3.5.4";
+		$ver_a="x86_32";
+		$ver_f="real";
+}
+=cut
+if (!$ENV{'QUERY_STRINGFID'})   #add from 20150609 by jdi -- default argvs
+{
+                $ver_v=$ENV{'QUERY_STRINGSID'};
+                $ver_a=$ENV{'QUERY_STRINGPID'};
+                $ver_f="real";
+}
+else
+{
+	$ver_v=$ENV{'QUERY_STRINGSID'};
+	$ver_a=$ENV{'QUERY_STRINGPID'};
+	$ver_f=$ENV{'QUERY_STRINGFID'};
+}
+
+$path0 =$HTTP->{'param'}->{'path0'};
+$path1 =$HTTP->{'param'}->{'path1'};
+$depth=$HTTP->{'param'}->{'depth'};
+$zoombox=$HTTP->{'param'}->{'checkbox1'};
+$codediffbox=$HTTP->{'param'}->{'code'};
+$sid=$HTTP->{'param'}->{'v'};
+makeheader('diffe');
+&diffe;
+makefooter('diffe');
+
+httpclean;

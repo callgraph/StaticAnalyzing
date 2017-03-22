@@ -1,0 +1,96 @@
+<script
+     id="script3"> D=document
+function mouseout(){
+
+
+var ju1=D.getElementById(&quot;attr01&quot;);
+var jur1=D.getElementById(&quot;attrre01&quot;);
+var jut1=D.getElementById(&quot;attrte01&quot;);
+
+var ju2=D.getElementById(&quot;attr02&quot;);
+var jur2=D.getElementById(&quot;attrre02&quot;);
+var jut2=D.getElementById(&quot;attrte02&quot;);
+
+var ju6=D.getElementById(&quot;attr03&quot;);
+var jur6=D.getElementById(&quot;attrre03&quot;);
+var jut6=D.getElementById(&quot;attrte03&quot;);
+
+var ju4=D.getElementById(&quot;attr04&quot;);
+var jur4=D.getElementById(&quot;attrre04&quot;);
+var jut4=D.getElementById(&quot;attrte04&quot;);
+
+ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+ju2.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+ju6.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+ju4.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+
+juv=&quot;hidden&quot;
+}
+
+function mouseover(evt,posX,posY,attr1,attr2,attr3,attr4){
+
+var ju1=D.getElementById(&quot;attr01&quot;);
+var jur1=D.getElementById(&quot;attrre01&quot;);
+var jut1=D.getElementById(&quot;attrte01&quot;);
+
+var ju2=D.getElementById(&quot;attr02&quot;);
+var jur2=D.getElementById(&quot;attrre02&quot;);
+var jut2=D.getElementById(&quot;attrte02&quot;);
+
+var ju6=D.getElementById(&quot;attr03&quot;);
+var jur6=D.getElementById(&quot;attrre03&quot;);
+var jut6=D.getElementById(&quot;attrte03&quot;);
+
+var ju4=D.getElementById(&quot;attr04&quot;);
+var jur4=D.getElementById(&quot;attrre04&quot;);
+var jut4=D.getElementById(&quot;attrte04&quot;);
+
+jut1.textContent = attr1;
+jut2.textContent = attr2;
+jut6.textContent = attr3;
+jut4.textContent = attr4;
+
+juv=&quot;visible&quot;
+if(posX>(5897-120))  
+{
+posX=posX-120
+}
+else
+{
+posX=posX
+if(posY>(0-128))   
+{
+posY=0-128
+}
+else
+{
+posY=posY
+}
+}
+jur1.setAttribute(&quot;x&quot;,posX)
+jur1.setAttribute(&quot;y&quot;,posY)
+jut1.setAttribute(&quot;x&quot;,(posX+60))
+jut1.setAttribute(&quot;y&quot;,(posY+20))
+
+jur2.setAttribute(&quot;x&quot;,(posX))
+jur2.setAttribute(&quot;y&quot;,(32+posY))
+jut2.setAttribute(&quot;x&quot;,(posX+60))
+jut2.setAttribute(&quot;y&quot;,(32+posY+20))
+
+jur6.setAttribute(&quot;x&quot;,(posX))
+jur6.setAttribute(&quot;y&quot;,(64+posY))
+jut6.setAttribute(&quot;x&quot;,(posX+60))
+jut6.setAttribute(&quot;y&quot;,(64+posY+20))
+
+jur4.setAttribute(&quot;x&quot;,(posX))
+jur4.setAttribute(&quot;y&quot;,(96+posY))
+jut4.setAttribute(&quot;x&quot;,(posX+60))
+jut4.setAttribute(&quot;y&quot;,(96+posY+20))
+
+ju1.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+ju2.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+ju6.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+ju4.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+
+}
+ </script>

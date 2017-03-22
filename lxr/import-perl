@@ -1,0 +1,52 @@
+#!/usr/bin/perl 
+# $Id: find,v 1.3 1998/04/30 11:58:16 argggh Exp $
+
+# find   --	Find files
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+#use lib 'lib/';
+#use LXR::Common;
+#use LXR::Config;
+#use strict;
+#use LXR::Common;
+#use LXR::Markup;
+#use LXR::Template;
+#use Local;
+#use FileHandle;
+
+#use CGI qw(:all); 
+my $path0=$ARGV[3];
+my $path1=$ARGV[4];
+my $sourceroot=$ARGV[6];
+my $sh_ruby_source=$ARGV[7];
+my $depth=$ARGV[5];
+my $baseurl=$ARGV[8];
+my $ddir=$ARGV[9];
+my $ver_v=$ARGV[0];
+my $ver_a=$ARGV[1];
+my $ver_f=$ARGV[2];
+my $dbdir;
+
+$dbdir=sprintf($ddir."\/".$ver_v."\/".$ver_a."\/");
+$result_link_name=sprintf("http://124.16.141.184:8080/newUploadPage.jsp");
+$result_file_name=sprintf("/usr/local/apache-tomcat-7.0.56/webapps/ROOT/mym_test/".$path0."/index_page.html");
+print ("<br> <embed src=\"",$result_link_name,"\" height=\"100%\" width=\"100%\"  />\n ");

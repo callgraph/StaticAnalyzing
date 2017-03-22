@@ -1,0 +1,7 @@
+        <g id="@id" visibility="hidden">
+            <rect style="fill:@color;display:outline;opacity:1"  width="85" height="14" x="@x" y="@y" />
+            <a xlink:show="new" xlink:href="@href"><text style="font-size:10px;text-anchor:left;font-family:'Times Roman,serif'" font-size="10.00" x="@x" y="@y">@pid</text></a>
+        </g>
+	<g id="@id1" onclick="showmenu('@id2')">
+	    <text id="@id" style="fill:#0000ff;font-size:30px" x="@x" y="@y">.</text>
+    	</g>

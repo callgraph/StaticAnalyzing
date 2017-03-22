@@ -1,0 +1,144 @@
+
+ <g
+       id="menu0"
+       onclick="cz()" >
+ <rect
+       style="fill:#ac9393"
+       id="rect0"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXX1"/>
+<text
+         style="font-size:18px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text1"
+         font-size="18.00"      
+         x="55"
+y="XXXXX2">menu</text>
+    </g>
+
+<g
+       id="menu1"
+       visibility="hidden"
+       onclick="cbro()">
+<rect
+       style="fill:#FFE4C4;display:inline"
+       id="rect1"
+       width="100"
+       height="32"
+       x="10.935384"
+       y="XXXXX3"/>
+<text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text1"
+         font-size="14.00"
+         y="XXXXX4"
+         x="62">Path1-Path1</text>
+</g>
+
+
+<g
+       id="menu2"
+       visibility="hidden"
+       onclick="cr()">       
+    <rect
+       style="fill:#F08080;display:inline"
+       id="rect2"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXX5"/>
+<text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text2"
+         font-size="14.00"
+         y="XXXXX6"
+         x="62">out->*</text>
+</g>
+
+<g
+       id="menu3"
+       visibility="hidden"
+       onclick="cg()">
+    <rect
+       style="fill:#B4EEB4;display:inline"
+       id="rect15793-40"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXX7"/>
+<text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text3"
+         font-size="14.00"
+         y="XXXXX8"
+         x="62">out-out</text>
+</g>
+<g
+       id="menu4"
+       visibility="hidden"
+       onclick="cbla()">
+    <rect
+       style="fill:#8F8F8F;display:inline"
+       id="rect4"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXX9"/>
+<text
+         style="font-size:14px;text-anchor:middle;color:#ffffff;fill:url(#linearGradient6272);fill-opacity:1;font-family:'Times Roman,serif';opacity:0.77130045"
+         id="text4"
+         font-size="14.00"
+         y="XXXXXA"
+         x="62">*->out</text>
+</g>
+<g
+       id="menu5"
+       visibility="hidden"
+       onclick="cblu()">
+    <rect
+       style="fill:#7EC0EE;display:inline"
+       id="rect5"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXXB"/>
+<text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text5"
+         font-size="14.00"
+         y="XXXXXC"
+         x="62">Path0-Path0</text>
+</g>
+<g
+       id="menu6"
+       visibility="hidden"
+       onclick="cchoc()">
+    <rect
+       style="fill:#CDB38B;display:inline;"
+       id="rect6"
+       width="100"
+       height="32"
+       x="10.935381"
+       y="XXXXXD"/>
+<text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="text6"
+         font-size="14.00"
+         y="XXXXXE"
+         x="62">Path0-Path1</text>
+</g>
+
+   <rect
+       style="fill:none;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3994"
+       visibility="hidden"
+       onmouseout="cmou()"
+       width="100"
+       height="224"
+       x="8.5916471"
+       y="XXXXXF"
+       ry="0"
+        />
+
+

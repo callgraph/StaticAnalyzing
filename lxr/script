@@ -1,0 +1,607 @@
+<script
+	id="script3">
+	D=document
+	bluv=&quot;visible&quot;
+	blav=&quot;visible&quot;
+	gv=&quot;visible&quot;
+	rv=&quot;visible&quot;
+	brov=&quot;visible&quot;
+	choc=&quot;visible&quot;
+	b=&quot;hidden&quot;;
+	bb=&quot;hidden&quot;;
+
+	var serverip="http://"+location.host;
+	var graphurl=serverip+"/lxr/call";
+	var listurl=serverip+"/lxr/watchlist";
+	var codeurl="http://124.16.141.171:81/lxr/source/";
+	var noteurl="http://124.16.141.171:81/mediawiki/index.php/";
+	
+	var urls = new Array(graphurl, listurl, codeurl, noteurl);
+	
+	function seturls() {
+		urls = new Array(graphurl, listurl, codeurl, noteurl);
+		return urls;
+	}
+
+	function geturls(){
+		return urls;
+	}
+
+
+	function cblu(){
+		var gblu=D.getElementById(&quot;layer2&quot;)
+		if(bluv==&quot;visible&quot;){
+			gblu.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			bluv=&quot;hidden&quot;}
+		else{
+			gblu.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			bluv=&quot;visible&quot;}
+	}
+
+	function cr(){
+		var gr=D.getElementById(&quot;layer3&quot;)
+		if(rv==&quot;visible&quot;){
+			gr.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			rv=&quot;hidden&quot;}
+		else{
+			gr.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			rv=&quot;visible&quot;}
+	}
+
+	function cg(){
+		var gg=D.getElementById(&quot;layer4&quot;)
+		if(gv==&quot;visible&quot;){
+			gg.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			gv=&quot;hidden&quot;}
+		else{	
+			gg.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			gv=&quot;visible&quot;}
+	}
+
+	function cbla(){
+		var gbla=D.getElementById(&quot;layer5&quot;)
+		if(blav==&quot;visible&quot;){
+			gbla.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			blav=&quot;hidden&quot;}
+		else{
+			gbla.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			blav=&quot;visible&quot;}
+	}
+
+	function cbro(){
+		var gbro=D.getElementById(&quot;layer6&quot;)
+		if(brov==&quot;visible&quot;){
+			gbro.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			brov=&quot;hidden&quot;}
+		else{
+			gbro.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			brov=&quot;visible&quot;}
+	}
+
+	function cchoc(){
+		var gchoc=D.getElementById(&quot;layer7&quot;)
+		if(choc==&quot;visible&quot;){
+			gchoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			choc=&quot;hidden&quot;}
+		else{
+			gchoc.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			choc=&quot;visible&quot;}
+	}
+
+	function cz(){
+		var	changezb=D.getElementById(&quot;menu0&quot;);
+		changebrob=D.getElementById(&quot;menu1&quot;);
+		changerb=D.getElementById(&quot;menu2&quot;);
+		changegb=D.getElementById(&quot;menu3&quot;);
+		changeblab=D.getElementById(&quot;menu4&quot;);
+		changeblub=D.getElementById(&quot;menu5&quot;);
+		changechoc=D.getElementById(&quot;menu6&quot;);
+		changemoub=D.getElementById(&quot;rect3994&quot;);
+		changezb.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+	
+		if(b==&quot;visible&quot;){
+			changeblub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changeblab.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changegb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changerb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changebrob.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changechoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changemoub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			b=&quot;hidden&quot;
+		}
+		else{
+			changeblub.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changeblab.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changegb.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changerb.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changebrob.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changechoc.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			changemoub.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			b=&quot;visible&quot;
+		}
+	}
+
+	function cmou(){
+		var   changebrob=D.getElementById(&quot;menu1&quot;);
+			changerb=D.getElementById(&quot;menu2&quot;);
+			changegb=D.getElementById(&quot;menu3&quot;);
+			changeblab=D.getElementById(&quot;menu4&quot;);
+			changeblub=D.getElementById(&quot;menu5&quot;);
+			changechoc=D.getElementById(&quot;menu6&quot;);
+			changemoub=D.getElementById(&quot;rect3994&quot;);
+		if(b==&quot;visible&quot;){
+			changeblub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changeblab.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changegb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changerb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changechoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changebrob.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			changemoub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			b=&quot;hidden&quot;}
+	}
+ 
+ 
+	function creatmenu(evt,posX,posY,url1,url2,url3,url8){
+		var ju1=D.getElementById(&quot;ju11&quot;);
+		var jur1=D.getElementById(&quot;jure11&quot;);
+		var jut1=D.getElementById(&quot;jute11&quot;);
+		var ju2=D.getElementById(&quot;ju12&quot;);
+		var jur2=D.getElementById(&quot;jure12&quot;);
+		var jut2=D.getElementById(&quot;jute12&quot;);
+		var ju6=D.getElementById(&quot;ju16&quot;);
+		var jur6=D.getElementById(&quot;jure16&quot;);
+		var jut6=D.getElementById(&quot;jute16&quot;);
+		var ju8=D.getElementById(&quot;ju18&quot;);
+		var jur8=D.getElementById(&quot;jure18&quot;);
+		var jut8=D.getElementById(&quot;jute18&quot;);
+
+		if(juv==&quot;visible&quot;){
+			ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju2.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju6.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju8.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			juv=&quot;hidden&quot;}
+		else{
+			juv=&quot;visible&quot;
+			if(posX>(XXXB-120)){
+				posX=posX-120}
+			else{
+				posX=posX}
+			if(posY>(0-128)){
+				posY=0-128}
+			else{
+				posY=posY}
+			jur1.setAttribute(&quot;x&quot;,posX)
+			jur1.setAttribute(&quot;y&quot;,posY)
+			jut1.setAttribute(&quot;x&quot;,(posX+60))
+			jut1.setAttribute(&quot;y&quot;,(posY+20))
+
+			jur2.setAttribute(&quot;x&quot;,(posX))
+			jur2.setAttribute(&quot;y&quot;,(32+posY))
+			jut2.setAttribute(&quot;x&quot;,(posX+60))
+			jut2.setAttribute(&quot;y&quot;,(32+posY+20))
+
+			jur6.setAttribute(&quot;x&quot;,(posX))
+			jur6.setAttribute(&quot;y&quot;,(64+posY))
+			jut6.setAttribute(&quot;x&quot;,(posX+60))
+			jut6.setAttribute(&quot;y&quot;,(64+posY+20))
+
+			jur8.setAttribute(&quot;x&quot;,(posX))
+			jur8.setAttribute(&quot;y&quot;,(96+posY))
+			jut8.setAttribute(&quot;x&quot;,(posX+60))
+			jut8.setAttribute(&quot;y&quot;,(96+posY+20))
+
+
+			ju1.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju2.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju6.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju8.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+		}
+		
+		ju1.onclick = function ur1(){
+			window.open(url1); 
+		}
+		ju2.onclick = function ur2(){
+			window.open(url2); 
+		}
+		ju6.onclick = function ur3(){
+			window.open(url3);
+		}
+		ju8.onclick = function ur8(){
+			window.open(url8);
+		}
+	}
+
+	function edgemenu(evt,posX,posY,url3,url4,url7,GroupId){
+		var ju3=D.getElementById(&quot;ju13&quot;);
+		var jur3=D.getElementById(&quot;jure13&quot;);
+		var jut3=D.getElementById(&quot;jute13&quot;);
+		var ju4=D.getElementById(&quot;ju14&quot;);
+		var jur4=D.getElementById(&quot;jure14&quot;);
+		var jut4=D.getElementById(&quot;jute14&quot;);
+		var ju7=D.getElementById(&quot;ju17&quot;);
+		var jur7=D.getElementById(&quot;jure17&quot;);
+		var jut7=D.getElementById(&quot;jute17&quot;);
+
+		if(juv==&quot;visible&quot;){
+			ju3.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju4.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju7.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			colorwhp.style.opacity="1";
+			colorwhp.setAttribute("stroke-width","1");
+			juv=&quot;hidden&quot;}
+		else{
+			juv=&quot;visible&quot;
+			if(posX>(XXXB-120)){
+				posX=posX-120}
+			else{
+				posX=posX}
+			if(posY>(0-96)){
+				posY=0-96}
+			else{
+				posY=posY}
+			jur3.setAttribute(&quot;x&quot;,posX)
+			jur3.setAttribute(&quot;y&quot;,posY)
+			jut3.setAttribute(&quot;x&quot;,(posX+60))
+			jut3.setAttribute(&quot;y&quot;,(posY+20))
+
+			jur4.setAttribute(&quot;x&quot;,(posX))
+			jur4.setAttribute(&quot;y&quot;,(32+posY))
+			jut4.setAttribute(&quot;x&quot;,(posX+60))
+			jut4.setAttribute(&quot;y&quot;,(32+posY+20))
+
+			jur7.setAttribute(&quot;x&quot;,(posX))
+			jur7.setAttribute(&quot;y&quot;,(64+posY))
+			jut7.setAttribute(&quot;x&quot;,(posX+60))
+			jut7.setAttribute(&quot;y&quot;,(64+posY+20))
+
+			ju3.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju4.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju7.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+
+			var CustomerObj=D.getElementById(GroupId);
+			CustomerObj.style.opacity="0.5";
+			CustomerObj.setAttribute("stroke-width","4");
+			
+			colorwhp = CustomerObj;
+		}
+		ju3.onclick = function ur3(){
+			window.open(url3); 
+		}
+		ju4.onclick = function ur4(){
+			window.open(url4); 
+		}
+		ju7.onclick = function ur7(){
+			window.open(url7);
+		}
+	}
+
+	var juv=&quot;hidden&quot;;
+
+	function creat2(evt){
+		var ju1=D.getElementById(&quot;ju11&quot;);
+		var jur1=D.getElementById(&quot;jure11&quot;);
+		var jut1=D.getElementById(&quot;jute11&quot;);
+		var ju2=D.getElementById(&quot;ju12&quot;);
+		var jur2=D.getElementById(&quot;jure12&quot;);
+		var jut2=D.getElementById(&quot;jute12&quot;);
+
+		if(juv==&quot;visible&quot;){
+			ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			ju2.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			juv=&quot;hidden&quot;}
+		else{
+			juv=&quot;visible&quot;
+			jur1.setAttribute(&quot;x&quot;,(evt.clientX))
+			jur1.setAttribute(&quot;y&quot;,(evt.clientY))
+			jut1.setAttribute(&quot;x&quot;,(evt.clientX+43))
+			jut1.setAttribute(&quot;y&quot;,(evt.clientY+20))
+
+			jur2.setAttribute(&quot;x&quot;,(evt.clientX-25))
+			jur2.setAttribute(&quot;y&quot;,(32+evt.clientY+100))
+			jut2.setAttribute(&quot;x&quot;,(evt.clientX-25+43))
+			jut2.setAttribute(&quot;y&quot;,(32+evt.clientY+100+20))
+
+			ju1.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			ju2.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+
+			<!--
+			alert(evt.clientX + "_" + evt.clientY);
+			alert(evt.clientX + "_" + (32+evt.clientY));-->
+		}
+	}
+
+	function creat1(evt){
+		var jur1=D.getElementById(&quot;jure11&quot;);
+		var ju1=D.getElementById(&quot;ju11&quot;);
+		if(juv==&quot;visible&quot;){
+			ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+			juv=&quot;hidden&quot;}
+		else{
+			ju1.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+			juv=&quot;visible&quot;
+			jur1.setAttribute(&quot;x&quot;,evt.clientX)
+			jur1.setAttribute(&quot;y&quot;,(XXXA+evt.clientY))
+			<!--alert(evt.clientX + "_" + evt.clientY+"."+evt.screenX + "_" + evt.screenY);-->
+		}
+	}
+
+	function crmou(){
+		var ju1=D.getElementById(&quot;ju11&quot;);
+		var ju2=D.getElementById(&quot;ju12&quot;);
+		ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+		ju2.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+		juv=&quot;hidden&quot;
+	}
+
+ </script>
+
+ <g
+	id="menu0"
+	onclick="cz()" >
+	<rect
+		style="fill:#ac9393"
+		id="rect0"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXX1"/>
+	<text
+		style="font-size:18px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text1"
+		font-size="18.00"      
+		x="55"
+		y="XXXXX2">menu</text>
+</g>
+
+<g
+	id="menu1"
+	visibility="hidden"
+	onclick="cbro()">
+	<rect
+		style="fill:#FFE4C4;display:inline"
+		id="rect1"
+		width="100"
+		height="32"
+		x="10.935384"
+		y="XXXXX3"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text1"
+		font-size="14.00"
+		y="XXXXX4"
+		x="62">Path1-Path1</text>
+</g>
+
+
+<g
+	id="menu2"
+	visibility="hidden"
+	onclick="cr()">       
+	<rect
+		style="fill:#F08080;display:inline"
+		id="rect2"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXX5"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text2"
+		font-size="14.00"
+		y="XXXXX6"
+		x="62">out->*</text>
+</g>
+
+<g
+	id="menu3"
+	visibility="hidden"
+	onclick="cg()">
+	<rect
+		style="fill:#B4EEB4;display:inline"
+		id="rect15793-40"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXX7"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text3"
+		font-size="14.00"
+		y="XXXXX8"
+		x="62">out-out</text>
+</g>
+<g
+	id="menu4"
+	visibility="hidden"
+	onclick="cbla()">
+	<rect
+		style="fill:#8F8F8F;display:inline"
+		id="rect4"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXX9"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text4"
+		font-size="14.00"
+		y="XXXXXA"
+		x="62">*->out</text>
+</g>
+<g
+	id="menu5"
+	visibility="hidden"
+	onclick="cblu()">
+	<rect
+		style="fill:#7EC0EE;display:inline"
+		id="rect5"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXXB"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text5"
+		font-size="14.00"
+		y="XXXXXC"
+		x="62">Path0-Path0</text>
+</g>
+
+<g
+	id="menu6"
+	visibility="hidden"
+	onclick="cchoc()">
+	<rect
+		style="fill:#CDB38B;display:inline;"
+		id="rect6"
+		width="100"
+		height="32"
+		x="10.935381"
+		y="XXXXXD"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="text6"
+		font-size="14.00"
+		y="XXXXXE"
+		x="62">Path0-Path1</text>
+</g>
+
+<rect
+	style="fill:none;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+	id="rect3994"
+	visibility="hidden"
+	onmouseout="cmou()"
+	width="100"
+	height="224"
+	x="8.5916471"
+	y="XXXXXF"
+	ry="0"/>
+
+
+
+<g
+	id="ju11"
+        visibility="hidden">    
+	<rect
+		style="fill:#EFE9CE;display:inline"
+		id="jure11"
+		width="120"
+		height="32"
+		x="22"
+		y="293"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute11"
+		font-size="10.00"
+		x="28"
+		y="316">further graph</text>
+ </g>
+ 
+ <g
+	id="ju12"
+	visibility="hidden">
+	<rect
+		style="fill:#AAD5EF;display:inline"
+		id="jure12"
+		width="120"
+		height="32"
+		x="22"
+		y="325"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute12"
+		font-size="10.00"
+		x="28"
+		y="348">code</text>
+ </g>
+ 
+ <g
+	id="ju16"
+        visibility="hidden">
+	<rect
+		style="fill:#DB7093;display:inline"
+		id="jure16"
+		width="120"
+		height="32"
+		x="22"
+		y="357"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute16"
+		font-size="10.00"
+		x="28"
+		y="380">comment</text>
+ </g>
+ 
+ <g
+	id="ju18"
+        visibility="hidden">
+	<rect
+		style="fill:#B4EEB4;display:inline"
+		id="jure18"
+		width="120"
+		height="32"
+		x="22"
+		y="389"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute18"
+		font-size="10.00"
+		x="28"
+		y="412">zoom</text>
+ </g>
+
+<g
+	id="ju13"
+	visibility="hidden">
+	<rect
+		style="fill:#EFE9CE;display:inline"
+		id="jure13"
+		width="120"
+		height="32"
+		x="22"
+		y="293"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute13"
+		font-size="10.00"
+		x="28"
+		y="316">call list</text>
+ </g>
+ 
+<g
+	id="ju14"
+	visibility="hidden">
+	<rect
+		style="fill:#AAD5EF;display:inline"
+		id="jure14"
+		width="120"
+		height="32"
+		x="22"
+		y="325"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute14"
+		font-size="10.00"
+		x="28"
+		y="348">further graph</text>
+ </g>
+
+<g
+	id="ju17"
+	visibility="hidden">
+	<rect
+		style="fill:#DB7093;display:inline"
+		id="jure17"
+		width="120"
+		height="32"
+		x="22"
+		y="357"/>
+	<text
+		style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+		id="jute17"
+		font-size="10.00"
+		x="28"
+		y="380">zoom</text>
+ </g>

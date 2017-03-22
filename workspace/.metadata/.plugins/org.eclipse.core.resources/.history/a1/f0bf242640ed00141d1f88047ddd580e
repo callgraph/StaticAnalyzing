@@ -1,0 +1,313 @@
+package com.wuz.serv.core.ws.impl;
+
+import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+
+//import org.jruby.CompatVersion;
+//import org.jruby.Ruby;
+//import org.jruby.RubyInstanceConfig;
+//import org.jruby.embed.ScriptingContainer;
+//import org.jruby.javasupport.JavaEmbedUtils;
+//import org.jruby.runtime.builtin.IRubyObject;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ibm.db2.jcc.resources.Resources;
+import com.synchrobit.synchrojmx.tools.adaptor.interceptor.Invocable;
+
+//�ں˷�����ͨ����������ȡSVGͼ�ķ���SVGImgService
+
+public class getSVGImgFromServ {
+	
+	public String getUrl(String v){
+		return v;
+	}
+	
+	public String getSVGUrl(String v,String a,String f,String path0,String path1){
+		getSVGImgFromServ showSvg=new getSVGImgFromServ();
+		//String result = null;
+		String fn="";
+		int timeN=0;
+		Object waitLock = new Object();
+		
+		
+		if(path0.toString().equals("*")){
+	    	
+	    	 fn="root.svg"; 
+	      }
+		else if(path1.toString().equals("")){
+	    	
+	    	 fn=path0+".svg"; 
+	      }
+	      else{
+	    	 fn=path0+"-"+path1+".svg";
+	      }
+		
+		if(f.equals("real")){
+			fn="real-"+fn;
+		}
+		else{
+			fn="virtual-"+fn;
+		}
+			
+		if(!showSvg.FileisExit(v,a,fn)){
+			showSvg.Calculate4Svg(v,a,f,path0, path1);
+	
+			//result="not exit!";
+			while(!showSvg.FileisExit(v,a,fn)){
+	
+				timeN++;
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("It still computing,Please wait....");
+				
+			  }
+		}
+		
+		System.out.println("The total time of computing is "+timeN*2+"s!");
+		
+		
+		String pathname="/usr/local/share/cg-rtl/lxr/source1/"+v+"/"+a+"/"+fn;
+		File filename=new File(pathname);
+		InputStreamReader reader = null;
+		try {
+			reader = new InputStreamReader(new FileInputStream(filename));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return "fail";
+		}
+		BufferedReader br =new BufferedReader(reader);
+		String line="test";
+	
+		try {
+			line=br.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String content=line;
+		while (line!=null){
+			try {
+				line=br.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			content+=line;
+			content+="Enter";
+		}
+		String url="+http://192.168.1.37/lxr/source1"+v+"/"+a+"/"+fn;
+		return content;
+	}
+	
+	
+	
+	public  void  Calculate4Svg(String v,String a,String f,String path0,String path1) {
+		String str="";
+		String str2="";
+		String str3="";
+		String graphname="";
+		String tempsvgname="";
+		
+		if(path1.toString().equals(""))
+		{
+			str="/usr/local/share/cg-rtl/lxr/./callgraph-sql.rb -2 /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/ -d "+ path0 +" "+ path1 +" -o /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +".graph http://192.168.1.37/lxr/watch/? "+ v +" "+ a +" http://192.168.1.37/lxr/call/? real";
+			str2="dot -Tsvg /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+".graph -o /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"temp.svg";
+			str3="/usr/local/share/cg-rtl/lxr/./pic.rb /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"temp.svg /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+".svg http://124.16.141.160/lxr-0401/source "+ v +" http://124.16.141.171:81/mediawiki/index.php";
+			graphname="/usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +".graph";
+			tempsvgname="/usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +"temp.svg";
+		}
+		else{
+		 str="/usr/local/share/cg-rtl/lxr/./callgraph-sql.rb -2 /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/ -d "+ path0 +" "+ path1 +" -o /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +"-"+path1 +".graph http://192.168.1.37/lxr/watch/? "+ v +" "+ a +" http://192.168.1.37/lxr/call/? real";
+		 str2="dot -Tsvg /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"-"+path1+".graph -o /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"-"+path1+"temp.svg";
+		 str3="/usr/local/share/cg-rtl/lxr/./pic.rb /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"-"+path1+"temp.svg /usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+f+"-"+path0+"-"+path1+".svg http://124.16.141.160/lxr-0401/source "+ v +" http://124.16.141.171:81/mediawiki/index.php";
+		 graphname="/usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +"-"+path1+".graph";
+		 tempsvgname="/usr/local/share/cg-rtl/lxr/source1/"+ v +"/"+ a +"/"+ f +"-"+ path0 +"-"+path1+"temp.svg";
+		}
+		
+		File graphfile = new File(graphname);
+		File tempsvgfile = new File(tempsvgname);
+		 Runtime rt=Runtime.getRuntime();
+		 Process pcs = null;
+		 Process pcs2=null;
+		 Process pcs3=null;
+			try {
+			
+				pcs = rt.exec(str);
+				long graphsize=graphfile.length();
+				while(graphsize==0)
+				{
+					graphsize=graphfile.length();
+					
+				}
+				
+				pcs2=rt.exec(str2);
+				long tempsvgsize=tempsvgfile.length();
+				while(tempsvgsize==0)
+				{
+					tempsvgsize=tempsvgfile.length();
+					
+				}
+				pcs3=rt.exec(str3);
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				//e2.printStackTrace();
+				System.out.println("error1");
+			}
+			executeCommand(pcs);
+			executeCommand(pcs2);
+			executeCommand(pcs3);
+     
+		}
+     public static void executeCommand(Process pcs)
+     {
+    	 BufferedReader br = new BufferedReader(new InputStreamReader(pcs.getInputStream()));
+    	 String sbr= new String();
+    	 try {
+    	 sbr=br.readLine();
+    	 } catch (IOException e1) {
+    	 // TODO Auto-generated catch block
+    	 //e1.printStackTrace();
+    	 System.out.println("error");
+    	 }
+    	 System.out.println(sbr);
+    	      String line = new String();
+    	      try {
+    	 			while((line =br.readLine()) != null){
+    	 			    System.out.println(line);
+    	 			}
+    	 		} catch (IOException e) {
+    	 			// TODO Auto-generated catch block
+    	 			e.printStackTrace();
+    	 		}try{
+    	          if(pcs.waitFor() == 0){  //其中p.waitFor()语句用来等待子进程结束，其返回值为进程结束退出码。
+    	              System.out.println("Commandexecute result is OK!");
+    	          }else{
+    	              System.out.println("Commandexecute result is fail......");
+    	          }
+    	      }catch(InterruptedException e){
+    	          System.err.println("processes was interrupted");
+    	      }
+    	      try {
+    	 		br.close();
+    	 		} catch (IOException e) {
+    	 			// TODO Auto-generated catch block
+    	 			e.printStackTrace();
+    	 		}
+     }
+		
+  
+
+		
+	public boolean FileisExit(String v,String a,String filename){   //�ļ���
+	      
+		//�鿴������Ŀ¼���Ƿ������svg�ļ�
+		String urlString="http://192.168.1.37/lxr/source1/"+v+"/"+a+"/"+filename;
+		URL url = null;
+	
+		try {
+			url = new URL(urlString);
+		
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		URLConnection conn = null;
+		try {
+			conn = url.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		
+	
+	     HttpURLConnection urlcon = null;
+		try {
+			urlcon = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+	     String message = urlcon.getHeaderField(0);//�ļ����ڡ�HTTP/1.1 200 OK�� �ļ������� ��HTTP/1.1 404 Not Found��
+	     if (StringUtils.isNotEmpty(message) && message.startsWith("HTTP/1.1 200")) {
+	   //����
+	    	 System.out.println("exit");
+				return true;
+	     }
+		
+		else{
+			System.out.println("not exit");
+			return false;
+		}
+		
+	}	
+		
+	
+	
+	public void ShowSvgImg(String v ,String a,String svgfilename){	//USELESS!useless!So I don't modify this function
+		//�����������svg
+		String urlString="http://192.168.1.37/lxr/source/"+v+"/"+a+"/";
+		boolean nn;	
+		URL url = null;
+		File f=new File(svgfilename);
+		try {
+			url = new URL(urlString);
+		
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		URLConnection conn = null;
+		try {
+			conn = url.openConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			Desktop.getDesktop().browse(new URL(urlString+svgfilename).toURI());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}

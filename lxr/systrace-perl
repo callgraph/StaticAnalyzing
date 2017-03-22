@@ -1,0 +1,74 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+
+sub call{
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"templates/style.css\">");
+print("<form memethod=get action=\"systrace-perl\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+print("Start: <input type=text name=\"path0\" ","value=\"",$path0,"\" size=20 >\n");
+print("End: <input type=text name=\"path1\" ","value=\"",$path1,"\" size=20 >\n");
+print("<input type=submit value=\"search\">\n","</form>\n");
+#   if ($che1 ne "checkbox") {$c1=t0;}     else {$c1=t1;}
+
+	$ttbasurl=sprintf("http://os.cs.tsinghua.edu.cn:280/lxr");
+	$temp_sh=$config->sourceroot;
+ 	$temp_shrb=$temp_sh;
+	$temp_shrb=~s/source\//lxr\/.\/new.rbx/;
+ 	$temp_shsp=$temp_sh;
+ 	$temp_shsp=~s/source\//lxr\/source1/;
+ 	$temp_shy=$temp_sh;
+ 	$temp_shy=~s/source/lxr\//;
+
+	#print($temp_shrb." ".$ENV{'QUERY_STRINGSID'}." ".$ENV{'QUERY_STRINGPID'}." ".$ENV{'QUERY_STRINGFID'}." ".$path0." ".$path1);
+        #print($temp_shrb."M_1 ".$ENV{'QUERY_STRINGSID'}."M_2 ".$ENV{'QUERY_STRINGPID'}."M_3 ".$ENV{'QUERY_STRINGFID'}."M_4 ".$path0."M_5 ".$path1);
+	system("ruby $temp_shrb $path0 $path1 $ENV{'QUERY_STRINGSID'} $ENV{'QUERY_STRINGPID'}");
+	#system("ruby backnew.rbx $path0 $path1"); #lyb normal works
+}
+httpinit;
+$path0 =$HTTP->{'param'}->{'path0'};
+$path1 =$HTTP->{'param'}->{'path1'};
+$sid=$HTTP->{'param'}->{'v'};
+if ($path0 eq "" && $path1 eq "") {
+  $path0 = "0";
+  $path1 = "500";
+}
+makeheader('systrace-perl');
+&call;
+makefooter('systrace-perl');
+
+httpclean;
+

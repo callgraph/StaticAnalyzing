@@ -1,0 +1,5 @@
+[extensions]
+lxr-ext = /usr/local/share/db-rtl/lxr/custom.d/hg-lxr-ext.py
+
+[trusted]
+users = 

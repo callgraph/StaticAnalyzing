@@ -1,0 +1,59 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+sub instr{        
+	print("<form memethod=get action=\"import\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+	print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+	print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+	$ttbasurl=sprintf("http://124.16.141.184/lxr");
+	$temp_sh=$config->sourceroot;
+ 	$temp_shrb=$temp_sh;
+ 	$temp_shrb=~s/source\//lxr\/.\/import-perl/;
+ 	$temp_shsp=$temp_sh;
+	$temp_shsp=~s/source\//lxr\/source1/;
+ 	$temp_shy=$temp_sh;
+ 	$temp_shy=~s/source/lxr\//;
+     	system("$temp_shrb $ENV{'QUERY_STRINGSID'} $ENV{'QUERY_STRINGPID'} $ENV{'QUERY_STRINGFID'} $path0 $path1 $depth $temp_shsp $temp_shy $ttbasurl $temp_shsp");
+}
+
+httpinit;
+$path0 =$HTTP->{'param'}->{'path0'};
+$path1 =$HTTP->{'param'}->{'path1'};
+$depth=$HTTP->{'param'}->{'depth'};
+$sid=$HTTP->{'param'}->{'v'};
+makeheader('import');
+&instr;
+makefooter('import');
+httpclean;

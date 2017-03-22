@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="gb2312"?>
+<workflow> 
+ <database>
+   <userName>sa</userName>
+   <password></password>
+   <url>jdbc:sqlserver://127.0.0.1:1433;databaseName=flow70</url>
+   <driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</driver>
+   <maxcount>50</maxcount>
+   <conncount>5</conncount>
+   <db>sqlserver</db>
+   <sybase>0</sybase>
+   <encode>0</encode>
+   <pageencode>gbk</pageencode>
+   <dbencode>ISO8859-1</dbencode>
+ </database>
+ <rmi>
+   <port>8020</port>
+   <debug>0</debug>
+   <bind>rmi://127.0.0.1:8020/rmi</bind>
+ </rmi>
+</workflow>

@@ -1,0 +1,113 @@
+<script
+     id="script2"> D=document
+bluv=&quot;visible&quot;
+blav=&quot;visible&quot;
+gv=&quot;visible&quot;
+rv=&quot;visible&quot;
+brov=&quot;visible&quot;
+choc=&quot;visible&quot;
+b=&quot;hidden&quot;;
+bb=&quot;hidden&quot;;
+
+function cblu(){ var gblu=D.getElementById(&quot;layer2&quot;)
+if(bluv==&quot;visible&quot;){
+gblu.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+bluv=&quot;hidden&quot;}
+else{
+gblu.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+bluv=&quot;visible&quot;}
+}
+
+function cr(){ var gr=D.getElementById(&quot;layer3&quot;)
+if(rv==&quot;visible&quot;){
+gr.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+rv=&quot;hidden&quot;}
+else{
+gr.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+rv=&quot;visible&quot;}
+
+}
+
+function cg(){ var gg=D.getElementById(&quot;layer4&quot;)
+if(gv==&quot;visible&quot;){
+gg.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+gv=&quot;hidden&quot;}
+else{
+gg.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+gv=&quot;visible&quot;}
+}
+
+
+function cbla(){ var gbla=D.getElementById(&quot;layer5&quot;)
+if(blav==&quot;visible&quot;){
+gbla.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+blav=&quot;hidden&quot;}
+else{
+gbla.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+blav=&quot;visible&quot;}
+}
+
+function cbro(){ var gbro=D.getElementById(&quot;layer6&quot;)
+if(brov==&quot;visible&quot;){
+gbro.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+brov=&quot;hidden&quot;}
+else{
+gbro.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+brov=&quot;visible&quot;}}
+
+function cchoc(){ var gchoc=D.getElementById(&quot;layer7&quot;)
+if(choc==&quot;visible&quot;){
+gchoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+choc=&quot;hidden&quot;}
+else{
+gchoc.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+choc=&quot;visible&quot;}}
+
+function cz(){
+var     changebrob=D.getElementById(&quot;menu1&quot;);
+  changerb=D.getElementById(&quot;menu2&quot;);
+  changegb=D.getElementById(&quot;menu3&quot;);
+  changeblab=D.getElementById(&quot;menu4&quot;);
+  changeblub=D.getElementById(&quot;menu5&quot;);
+  changechoc=D.getElementById(&quot;menu6&quot;);
+  changemoub=D.getElementById(&quot;rect3994&quot;);
+
+if(b==&quot;visible&quot;){
+changeblub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changeblab.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changegb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changerb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changebrob.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changechoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changemoub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+b=&quot;hidden&quot;}
+else{
+changeblub.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changeblab.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changegb.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changerb.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changebrob.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changechoc.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+changemoub.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+b=&quot;visible&quot;}}
+
+function cmou(){
+var   changebrob=D.getElementById(&quot;menu1&quot;);
+  changerb=D.getElementById(&quot;menu2&quot;);
+  changegb=D.getElementById(&quot;menu3&quot;);
+  changeblab=D.getElementById(&quot;menu4&quot;);
+  changeblub=D.getElementById(&quot;menu5&quot;);
+  changechoc=D.getElementById(&quot;menu6&quot;);
+  changemoub=D.getElementById(&quot;rect3994&quot;);
+if(b==&quot;visible&quot;){
+changeblub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changeblab.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changegb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changerb.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changechoc.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changebrob.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+changemoub.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+b=&quot;hidden&quot;}}
+
+
+ </script>

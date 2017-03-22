@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- root element, all properties must be under this element --><ilink>
+    <server>
+        <default>
+            <maxconnections>-1</maxconnections>
+            <sockettype>jmp</sockettype>
+        </default>
+        <demons>
+            <mysocket>
+                <sockettype>jmp</sockettype>
+                <port>1111</port>
+                <bindaddress>127.0.0.1</bindaddress>
+                <allowedhosts />
+            </mysocket>
+        </demons>
+    </server>
+    <jndi>
+        <alias>
+            <QueueConnectionFactory>
+                <ref>mysocket@server1</ref>
+            </QueueConnectionFactory>
+            <TopicConnectionFactory>
+                <ref>mysocket@server1</ref>
+            </TopicConnectionFactory>
+            <DurableTopicCF>
+                <ref>mysocket@server1</ref>
+            </DurableTopicCF>
+        </alias>
+    </jndi>
+    <auth>
+        <enabled>false</enabled>
+        <groups>
+            <public>
+                <accessedqueues>
+                    <testqueue>
+                        <browse>true</browse>
+                        <send>true</send>
+                        <receive>true</receive>
+                    </testqueue>
+                </accessedqueues>
+                <accessedtopics>
+                    <testtopic>
+                        <publish>true</publish>
+                        <subscribe>true</subscribe>
+                        <durable>true</durable>
+                    </testtopic>
+                    <internal.naming>
+                        <publish>true</publish>
+                        <subscribe>false</subscribe>
+                        <durable>false</durable>
+                    </internal.naming>
+                </accessedtopics>
+            </public>
+            <admin>
+                <accessedqueues>
+                    <ilinkmgrq>
+                        <send>true</send>
+                        <receive>true</receive>
+                    </ilinkmgrq>
+                </accessedqueues>
+                <accessedtopics>
+                    <internal.naming>
+                        <publish>true</publish>
+                        <subscribe>false</subscribe>
+                        <durable>false</durable>
+                    </internal.naming>
+                </accessedtopics>
+            </admin>
+        </groups>
+        <resourcegroups>
+            <public>
+                <maxsessions>10</maxsessions>
+                <maxtempqueues>10</maxtempqueues>
+                <maxproducers>500</maxproducers>
+                <maxconsumers>100</maxconsumers>
+            </public>
+        </resourcegroups>
+        <users>
+            <admin>
+                <password>pass</password>
+                <group>admin</group>
+                <resourcegroup>public</resourcegroup>
+                <allowedhosts />
+            </admin>
+        </users>
+    </auth>
+    <net>
+        <tcpmode>blocking</tcpmode>
+    </net>
+    <queues>
+        <swaptype>jdbc</swaptype>
+        <file>
+            <swapdir>../store1</swapdir>
+        </file>
+        <jdbc>
+            <driver>org.hsqldb.jdbcDriver</driver>
+            <connectionurl>jdbc:hsqldb:file:..\store\db1\store</connectionurl>
+            <user>sa</user>
+            <password />
+            <min>5</min>
+            <max>20</max>
+        </jdbc>
+
+        <queuedef>
+            <Buy_Queue />
+            <Sell_Queue />
+            <A />
+            <B />
+            <C />
+            <D />
+            <E />
+            <TestQueue-1 />
+            <testqueue>
+                <cachesize>500</cachesize>
+                <maxmessages>-1</maxmessages>
+                <mode>no_change</mode>
+            </testqueue>
+            <controlQueue>
+                <cachesize>500</cachesize>
+                <maxmessages>-1</maxmessages>
+                <mode>no_change</mode>
+            </controlQueue>
+        </queuedef>
+    </queues>
+    <topics>
+        <durablestoredir>../store1/dur</durablestoredir>
+        <hierarchysubmode>receive_all</hierarchysubmode>
+        <topicdef>
+            <testtopic />
+            <shanghai_stock_topic />
+            <TestTopic-1 />
+			<topic_1 />
+			<topicHB />
+			<topicLOG />
+        </topicdef>
+    </topics>
+    <routing>
+        <servername>server1</servername>
+        <algorithm>shortest</algorithm>
+        <manualrouting>server4</manualrouting>
+        <default>
+            <sockettype>jmp</sockettype>
+        </default>
+        <demons>
+            <demon1>
+                <port>1999</port>
+                <bindaddress>localhost</bindaddress>
+                <password>password</password>
+            </demon1>
+        </demons>
+    </routing>
+    <threadpools>
+        <ClientConsumerPOOL>
+            <maxthreads>5</maxthreads>
+        </ClientConsumerPOOL>
+        <ClientProducerPOOL>
+            <maxthreads>5</maxthreads>
+        </ClientProducerPOOL>
+        <ServiceConnectionPOOL>
+            <maxthreads>5</maxthreads>
+            <minthreads>1</minthreads>
+        </ServiceConnectionPOOL>
+        <ServiceSessionPOOL>
+            <maxthreads>3</maxthreads>
+            <minthreads>1</minthreads>
+        </ServiceSessionPOOL>
+        <JavaNamingPOOL>
+            <maxthreads>5</maxthreads>
+            <minthreads>3</minthreads>
+        </JavaNamingPOOL>
+        <MgrPOOL>
+            <maxthreads>3</maxthreads>
+            <minthreads>1</minthreads>
+        </MgrPOOL>
+        <TopicPOOL>
+            <maxthreads>6</maxthreads>
+        </TopicPOOL>
+        <NetworkConnectionMgrPOOL>
+            <maxthreads>1</maxthreads>
+        </NetworkConnectionMgrPOOL>
+        <NetworkConnectionPOOL>
+            <minthreads>3</minthreads>
+        </NetworkConnectionPOOL>
+        <QueueTimeoutPOOL>
+            <maxthreads>1</maxthreads>
+        </QueueTimeoutPOOL>
+        <RoutingConnectionMgrPOOL>
+            <maxthreads>1</maxthreads>
+        </RoutingConnectionMgrPOOL>
+        <RouteForwardingPOOL>
+            <maxthreads>5</maxthreads>
+        </RouteForwardingPOOL>
+        <RouteConnectionPOOL>
+            <maxthreads>5</maxthreads>
+        </RouteConnectionPOOL>
+        <SystemPOOL>
+            <minthreads>5</minthreads>
+        </SystemPOOL>
+    </threadpools>
+</ilink>

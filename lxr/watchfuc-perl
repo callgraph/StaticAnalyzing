@@ -1,0 +1,174 @@
+#!/usr/bin/perl
+# $Id: find,v 1.3 1998/04/30 11:58:16 argggh Exp $
+
+# find   --	Find files
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+#use lib 'lib/';
+#use LXR::Common;
+#use LXR::Config;
+#use strict;
+#use CGI qw(:all); 
+
+#sub watchfuc {
+
+$path0=$ARGV[3];
+$path1=$ARGV[4];
+$sourceroot=$ARGV[5];
+$sh_ruby_source=$ARGV[6];
+$baseurl=$ARGV[7];
+$ddir=$ARGV[8];
+$codeurl=$ARGV[9];
+$doxygen_flag=$ARGV[10];
+$noteurl=$ARGV[11];
+$ver_v=$ARGV[0];
+$ver_a=$ARGV[1];
+$ver_f=$ARGV[2];
+$dbdir=sprintf($ddir."\/".$ver_v."\/".$ver_a."\/");
+
+$s_v=sprintf("00");
+$s_a=sprintf("11");
+$s_v=$ver_v;
+$s_a=$ver_a;
+      $temp_sh=sprintf($sh_ruby_source."\/watch-sql.rb");
+      $temp_soft=sprintf($sh_ruby_source.".\/soft_watch.rb");
+       $temp_source1=$baseurl;
+      $temp_source2=sprintf($temp_source1."\/source1"."\/".$ver_v."\/".$ver_a."\/");
+
+    if ($path0 ne "NULL" || $path1 ne "NULL")
+        {
+          
+          if ($path1 ne "NULL" && $path0 ne "NULL")
+            {
+                $file_name=sprintf($ver_f."-".$path0."-".$path1.".list");
+             }
+
+           if ($path0 eq "root" && $path1 ne "NULL")
+            {
+               $file_name=sprintf($ver_f."-full-".$path1.".list");
+            }
+           if ($path0 ne "NULL" && $path1 eq "root")
+            {
+              $file_name=sprintf($ver_f."-".$path0."-full.list");
+             }
+              $file_name=~s/\//_/g;
+              $file_name=~s/\.c/_c/g;
+         }
+
+#print($file_name);  
+
+#  $temp_source1= sprintf($Conf->dbdir.$file_name);
+       $temp_source1=sprintf($dbdir.$file_name);
+#print("\n".$temp_source1."\n"); 
+      if (-e $temp_source1)
+       {
+
+           print (" <iframe frameborder=\"0\" name=\"frame\" id=\"frame\" src=\"",$temp_source2,$file_name,"\" height=\"100%\" width=\"100%\" scrolling=\"auto\"></iframe>");
+            print("<hr>\n");
+      }
+     else{
+ 
+#print("vvv");
+          if ($path0 ne "NULL"|| $path1 ne "NULL") {
+#              $temp_source01=sprintf($Conf->sourceroot);       
+               $temp_source01=sprintf($sourceroot."\/".$ver_v."\/".$ver_a."\/");
+
+           $temp_source02=sprintf("/var/www/doxygen_kernel/".$ver_v."\/"."html/files.html");
+              if ($path0 ne "NULL" && $path1 ne "NULL")
+              {
+
+            if($path0 eq "root" ||$path1 eq "root")
+            {
+             
+                 if ($path0 eq "root")
+                 {
+      ###
+            #       if( $s_v eq "linux-3.5.4" && $s_a eq "i386-d")
+             #       {
+              #           system("$temp_soft $temp_source01 full $path1 $baseurl");
+               #      }
+                #     else
+                 #    {
+                         system("$temp_sh $temp_source01 full $path1 $temp_source02 $ver_v $ver_f $ver_a $noteurl $codeurl $doxygen_flag");
+
+                  #   }
+      ###
+                 }#20120923
+                 else
+                 {
+
+    ###
+                   # if ($s_v eq "linux-3.5.4" && $s_a eq "i386-d")
+                   # {
+                         #add new rb programe like system("$temp_sh $temp_source01 ....");(style like next "else")
+                         #use new $temp_sh with new name watch.rb
+                         #**********************
+                    #     system("$temp_soft $temp_source01 $path0 full $baseurl");
+                    # }
+                    # else
+                    #{
+#           print($temp_sh.$temp_source01.$path0."full".$temp_source02.$ver_v.$ver_f.$ver_a.$baseurl.$codeurl);
+                         system("$temp_sh $temp_source01 $path0 full $temp_source02 $ver_v $ver_f $ver_a $noteurl $codeurl $doxygen_flag");
+
+                    #}
+      ###
+
+
+                 } #20121206      
+            }
+            else
+            {
+        #   if ($s_v eq "linux-3.5.4" and $s_a eq "i386-d")
+        # { print($s_v,"***",$s_a);
+    ###
+ #        if (($s_v eq "linux-3.5.4") and ($s_a eq "i386-d"))
+  #        {
+            #add new rb programe like system("$temp_sh $temp_source01 ....");(style like next "else")
+            #use new $temp_sh with new name watch.rb
+            #********************
+            #  print($temp_soft,"*3*",$temp_source01,"***",$path0,$path1,"****",$baseurl);#
+   #            system("$temp_soft $temp_source01 $path0 $path1 $baseurl");
+   #        }
+    #      else
+     #     {
+# print($temp_sh." ".$temp_source01." ".$path0." ".$path1." ".$temp_source02." ".$ver_v." ". $ver_f." ".$ver_a." ".$noteurl." ".$codeurl." ".$doxygen_flag);
+              system("$temp_sh $temp_source01 $path0 $path1 $temp_source02 $ver_v $ver_f $ver_a $noteurl $codeurl $doxygen_flag"); #20120923
+      
+      #    }
+      ###
+
+
+            }
+            
+
+         }
+         
+}   #   system("dot -Tgif /usr/share/lxr/http/temp/net.graph -o /usr/share/lxr/http/temp/net.gif"); #20120923
+ 
+print (" <iframe frameborder=\"0\" name=\"frame\" id=\"frame\" src=\"",$temp_source2,$file_name,"\" height=\"100%\" width=\"100%\" scrolling=\"auto\"></iframe>");
+        print("<hr>\n");
+
+}
+ 
+
+
+

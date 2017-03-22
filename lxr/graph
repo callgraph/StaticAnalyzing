@@ -1,0 +1,265 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+=head
+sub htmlsub {
+	my ($s, $l) = @_;
+	my @s = split(/(<[^>]*>|&[\#\w\d]+;?)/, $s);
+	$s = '';
+
+	while (@s) {
+		my $f = substr(shift(@s), 0, $l);
+		$l -= length($f);
+		$s .= $f;
+		$f = shift(@s);
+		if ($f =~ /^&/) {
+			if ($l > 0) {
+				$s .= $f;
+				$l--;
+			}
+		} else {
+			$s .= $f;
+		}
+	}
+	$s .= ' ' x $l;
+	return $s;
+}
+
+sub printdiff {
+	my (@dargs) = @_;
+
+	unless (defined @dargs) {
+		my @vars;
+		foreach ($config->allvariables) {
+			if	(!exists($config->{'variables'}{$_}{'when'})
+				|| eval($config->varexpand($config->{'variables'}{$_}{'when'}))
+				) {
+				push(@vars, $config->vardescription($_));
+			}
+		}
+
+		$vars[ $#vars - 1 ] .= " or " . pop(@vars) if $#vars > 0;
+
+		print(
+			"<p align=\"center\">\n",
+			"Please indicate the version of the file you wish to\n",
+			"compare to by clicking on the appropriate\n",
+			join(", ", @vars),
+			" button.\n", "</p>\n"
+		);
+		return;
+	}
+
+	if ($pathname =~ m|/$|) {
+		print("<h3 align=\"center\">Diff not yet supported for directories.</h3>\n");
+		return;
+	}
+	my $origname = $pathname;
+
+	my $diffname = $config->mappath($config->unmappath($pathname, @dargs));
+	my ($diffv) = grep(m/v=/, @dargs);
+	$diffv =~ s/v=//;
+
+	unless ($files->isfile($origname, $releaseid)) {
+		print("<p class='error'>*** $origname does not exist in version $releaseid ***</p>\n");
+		return;
+	}
+	unless ($files->isfile($diffname, $diffv)) {
+		print("<p class='error'>*** $diffname does not exist in version $releaseid ***</p>\n");
+		return;
+	}
+
+	fflush;
+	# realfilename may create a temporary file
+	# which should be released when no longer needed
+	my $origtemp = $files->realfilename($origname, $releaseid);
+	my $difftemp = $files->realfilename($diffname, $diffv);
+	$ENV{'PATH'} = '/usr/local/bin:/usr/bin:/bin:/usr/sbin';
+	unless (open(DIFF, "-|")) {
+		open(STDERR, ">&STDOUT");
+		exec('diff', '-U0', $origtemp, $difftemp);
+		print STDERR "*** Diff subprocess died unexpextedly: $!\n";
+		exit;
+	}
+
+	my ($os, $ol, $ns, $nl, $ms, $ml, $bo, $ofs, $dir, %orig, %new, %chg);
+
+	while (<DIFF>) {
+		if (($os, $ol, $ns, $nl) = /@@ -(\d+)(?:,(\d+)|) \+(\d+)(?:,(\d+)|) @@/) {
+			$os++ if $ol eq '0';
+			$ns++ if $nl eq '0';
+			$ol = 1 unless defined($ol);
+			$nl = 1 unless defined($nl);
+
+			$bo = $os + $ofs;
+			if ($ol < $nl) {
+				$ofs += $nl - $ol;
+
+				$dir               = '&gt;&gt;';
+				$ms                = $nl - $ol;
+				$ml                = $ol;
+				$orig{ $os + $ol } = $ms;
+			} else {
+				$dir              = '&lt;&lt;';
+				$ms               = $ol - $nl;
+				$ml               = $nl;
+				$new{ $ns + $nl } = $ms;
+			}
+			foreach (0 .. $ml - 1) {
+				$chg{ $bo + $_ } = '!!';
+			}
+			foreach (0 .. $ms - 1) {
+				$chg{ $bo + $ml + $_ } = $dir;
+			}
+
+		}
+	}
+	close(DIFF);
+
+	print	( "<h1>Diff markup</h1>\n"
+			, "<h2>between "
+			, fileref	( "$origname"
+						, "diff-fref", $origname
+						)
+			, " ("
+			);
+	my @fctx;
+	for ($config->allvariables) {
+		next if	exists($config->{'variables'}{$_}{'when'})
+				&& !eval($config->varexpand($config->{'variables'}{$_}{'when'}));
+		push (@fctx, $config->vardescription($_).": ".$config->variable($_));
+	}
+	print	( join(", ", @fctx)
+			, ")<br>"
+			, " and "
+			);
+	my @linkargs = grep {m/(.*?)=(.*)/; $config->variable($1) ne "$2";} @dargs;
+	map (s/(.*?)=/!$1=/, @linkargs);
+	print	( fileref	( "$diffname",
+						, "diff-fref", $diffname, undef
+						, @linkargs
+						)
+			, " ("
+			);
+	@fctx = ();
+	for my $var ($config->allvariables) {
+		next if	exists($config->{'variables'}{$var}{'when'})
+				&& !eval($config->varexpand($config->{'variables'}{$var}{'when'}));
+		my ($varval) = grep(m/$var=/, @dargs);
+		$varval =~ s/$var=//;
+		push (@fctx, $config->vardescription($var).": $varval");
+	}
+	print	( join(", ", @fctx)
+			, ")</h2><hr>\n"
+			);
+
+	my $origh = FileHandle->new($origtemp);
+	my $orig  = '';
+	markupfile($origh, sub { $orig .= shift });
+	my $len = $. + $ofs;
+	$origh->close;
+	$files->releaserealfilename($origtemp);
+
+	$pathname = $diffname;
+
+	my $diffh = FileHandle->new($difftemp);
+	my $new   = '';
+	markupfile($diffh, sub { $new .= shift });
+	$diffh->close;
+	$files->releaserealfilename($difftemp);
+
+	$pathname = $origname;
+
+	my $i;
+	$i = 1;
+	$orig =~ s/^/"\n" x ($orig{$i++})/mge;
+	$i = 1;
+	$new =~ s/^/"\n" x ($new{$i++})/mge;
+
+	my @orig = split(/\n/, $orig);
+	my @new  = split(/\n/, $new);
+
+	my $leftwidth = $$HTTP{'param'}{'_diffleftwidth'}
+					|| $config->{'diffleftwidth'}
+					|| 50;
+	print("<pre class=\"filecontent\">\n");
+	foreach $i (0 .. $len) {
+		my $o = htmlsub($orig[$i], $leftwidth);
+		my $n = $new[$i];
+
+		my $diffmark = "  ";
+		if ($chg{ $i + 1 }) {
+			$diffmark = "<span class=\"diff-mark\">" . $chg{ $i + 1 } . "</span>";
+			if ("&lt;&lt;" eq $chg{ $i + 1 }) {
+				$o =~ s|</a> |</a> <span class=\"diff-left\">|;
+			}
+			if ("&gt;&gt;" eq $chg{ $i + 1 }) {
+				$n =~ s|</a> |</a> <span class=\"diff-right\">|;
+			}
+			if ("!!" eq $chg{ $i + 1 }) {
+				$o =~ s|</a> |</a> <span class=\"diff-both\">|;
+				$n =~ s|</a> |</a> <span class=\"diff-both\">|;
+			}
+			$o .= "</span>";
+			$n .= "</span>";
+		}
+
+		#print("$o <span class=\"diff-mark\">",
+		#      ($chg{$i+1} || "  "), "</span> $n\n");
+		print "$o $diffmark $n\n";
+	}
+	print("</pre>\n");
+
+}
+=cut
+httpinit;
+
+makeheader('graph');
+
+#printdiff(@dargs);
+my $vvv=$ENV{'QUERY_STRINGS'};
+my $version=($config->sourcerootname);
+$vvv.='_graph';
+my $rubytest=`ruby -w /home/bruce/rb/testperl.rb $vvv`;
+print(
+			"<p align=\"center\">\n",
+			"$rubytest\n",
+			
+			 "</p>\n"
+		);
+makefooter('graph');
+
+httpclean;
+

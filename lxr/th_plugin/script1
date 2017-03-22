@@ -1,0 +1,155 @@
+<script
+     id="script1"> D=document
+bluv=&quot;visible&quot;
+blav=&quot;visible&quot;
+gv=&quot;visible&quot;
+rv=&quot;visible&quot;
+brov=&quot;visible&quot;
+choc=&quot;visible&quot;
+b=&quot;hidden&quot;;
+bb=&quot;hidden&quot;;
+
+ 
+ var menuId = ""
+ var colorwhp = null
+ function hiddenmenu(){
+  var ju1=D.getElementById(&quot;ju11&quot;);
+  var ju2=D.getElementById(&quot;ju12&quot;);
+  var ju3=D.getElementById(&quot;ju13&quot;);
+  var ju5=D.getElementById(&quot;ju15&quot;);
+  var ju6=D.getElementById(&quot;ju16&quot;);
+
+  ju1.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+  ju2.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+  ju6.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+  ju3.setAttribute(&quot;visibility&quot;,&quot;hidden&quot;)
+
+  
+  if ( colorwhp != null){
+  colorwhp.style.opacity="1";
+  colorwhp.setAttribute("stroke-width","1");
+  }
+
+  menuId = ""
+}
+//hezhong
+function creatmenu(evt,posX,posY,url1,url2,url3,url8,GroupId){
+var ju1=D.getElementById(&quot;ju11&quot;);
+var jur1=D.getElementById(&quot;jure11&quot;);
+var jut1=D.getElementById(&quot;jute11&quot;);
+var ju2=D.getElementById(&quot;ju12&quot;);
+var jur2=D.getElementById(&quot;jure12&quot;);
+var jut2=D.getElementById(&quot;jute12&quot;);
+var ju6=D.getElementById(&quot;ju16&quot;);
+var jur6=D.getElementById(&quot;jure16&quot;);
+var jut6=D.getElementById(&quot;jute16&quot;);
+
+
+if(menuId == GroupId){
+  hiddenmenu()
+}
+else{
+hiddenmenu()
+menuId = GroupId
+if(posX>(XXXB-120))  
+{
+posX=posX-120
+}
+else
+{
+posX=posX
+}
+if(posY>(0-96))   
+{
+posY=posY-96
+}
+else
+{
+posY=posY
+}
+jur1.setAttribute(&quot;x&quot;,posX)
+jur1.setAttribute(&quot;y&quot;,posY)
+jut1.setAttribute(&quot;x&quot;,(posX+60))
+jut1.setAttribute(&quot;y&quot;,(posY+20))
+
+jur2.setAttribute(&quot;x&quot;,(posX))
+jur2.setAttribute(&quot;y&quot;,(32+posY))
+jut2.setAttribute(&quot;x&quot;,(posX+60))
+jut2.setAttribute(&quot;y&quot;,(32+posY+20))
+
+jur6.setAttribute(&quot;x&quot;,(posX))
+jur6.setAttribute(&quot;y&quot;,(64+posY))
+jut6.setAttribute(&quot;x&quot;,(posX+60))
+jut6.setAttribute(&quot;y&quot;,(64+posY+20))
+
+
+ju1.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+ju2.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+ju6.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+
+}
+ju1.onclick = function ur1()
+{
+ window.open(url1); 
+}
+ju2.onclick = function ur2()
+{
+ window.open(url2); 
+}
+ju6.onclick = function ur3()
+{
+ window.open(url3);
+}
+
+}
+
+function edgemenu(evt,posX,posY,url3,url4,url7,GroupId){
+
+var ju3=D.getElementById(&quot;ju13&quot;);
+var jur3=D.getElementById(&quot;jure13&quot;);
+var jut3=D.getElementById(&quot;jute13&quot;);
+
+
+if(menuId == GroupId){
+  hiddenmenu()
+}
+else{
+hiddenmenu()
+menuId = GroupId 
+if(posX>(XXXB-120))  
+{
+posX=posX-120
+}
+else
+{
+posX=posX
+}
+if(posY>(0-32))   
+{
+posY=0-32
+}
+else
+{
+posY=posY
+}
+jur3.setAttribute(&quot;x&quot;,posX)
+jur3.setAttribute(&quot;y&quot;,posY)
+jut3.setAttribute(&quot;x&quot;,(posX+60))
+jut3.setAttribute(&quot;y&quot;,(posY+20))
+
+
+ju3.setAttribute(&quot;visibility&quot;,&quot;visible&quot;)
+
+var CustomerObj=D.getElementById(GroupId);
+CustomerObj.style.opacity="0.5";
+CustomerObj.setAttribute("stroke-width","4");
+
+colorwhp = CustomerObj;
+}
+ju3.onclick = function ur3()
+{
+ window.open(url3); 
+}
+
+}
+ </script>

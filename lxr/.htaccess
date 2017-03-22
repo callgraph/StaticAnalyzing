@@ -1,0 +1,3 @@
+<Files ~ (search|source|ident|find|watchlist|call|vulnermap|taintrace|systrace-perl|diffe|energy|binder|inst|import|inst_bak|dcgAnalyser|dcg/statistics.py|dcg/generateLink.py)$>
+SetHandler cgi-script
+</Files>

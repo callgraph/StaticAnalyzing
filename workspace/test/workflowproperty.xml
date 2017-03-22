@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Synchroflow>
+	<General>		
+		<Sysname name="" type="1">SynchroFLOW</Sysname>
+		<rmiServerIP name="" type="1">rmi://127.0.0.1:8020/rmi</rmiServerIP>		
+	</General>
+	<Enactmentservice>		
+		<dbrmiconnect name="" type="1">rmi://127.0.0.1:8020/rmi</dbrmiconnect>
+		<maxserialno name="" type="1">2000000000</maxserialno>
+		<maxprocessinscount name="" type="1">500</maxprocessinscount>
+		<maxenginenumber name="" type="1">20</maxenginenumber>
+		<defaultenginenumber name="" type="1">5</defaultenginenumber> 
+		<monitorrmiport name="" type="1">8020</monitorrmiport>
+		<monitorrmiurl name="" type="1">rmi://127.0.0.1:8020/monitorrmi</monitorrmiurl>
+		<serverip name="" type="1">127.0.0.1</serverip>
+		<pdserverrmiport name="" type="1">8020</pdserverrmiport>
+		<pdserverrmiurl name="" type="1">rmi://127.0.0.1:8020/pdserverrmi</pdserverrmiurl>				
+		<serverport name="" type="1">8010</serverport>		
+		<runningscope name="" type="1">10</runningscope>
+		<subprocessinsdefaultname name="" type="1">subprocess</subprocessinsdefaultname>
+		<deleteworkitemtime name="" type="1">1</deleteworkitemtime>
+		<processclear name="" type="1">1</processclear>
+		<jmsconsumerthreads name="" type="1">20</jmsconsumerthreads>
+		<permanence name="" type="1">false</permanence>
+		<messageport name="" type="1">1111</messageport>
+		<jmsqueuemaxlength name="" type="1">100</jmsqueuemaxlength>
+		<timeroperate name="" type="1">com.synchrobit.synchroflow.enactmentservice.server.ProcessCollectTask:86400000</timeroperate>
+		<processwaittime name="" type="1">120</processwaittime>		
+		<iqserverport name="" type="1">8001</iqserverport>
+		<iqusermaxnum name="" type="1">500</iqusermaxnum>						
+		<WorkItemScanInterval name="" type="1">60000</WorkItemScanInterval>
+		<iqPrint name="" type="1">false</iqPrint>
+		<WebIP name="" type="1">127.0.0.1</WebIP>
+		<WebPort name="" type="1">8080</WebPort>
+		<iqenable name="" type="1">false</iqenable>
+		<modelfiledir name="" type="1">F:\SynchroFlowProject\SynchroBPM7.0_Server\flowserver\modelfile\formal\</modelfiledir> 		
+		<image_dir name="" type="1">F:\SynchroFlowProject\SynchroBPM7.0_Server\flowserver\monitorimage</image_dir>
+		<ObjectPoolMaxSize name="" type="1">100</ObjectPoolMaxSize>
+		<ThreadCacheSize name="" type="1">1000</ThreadCacheSize>
+		<preApplication name="" type="1"> </preApplication>
+		<proApplication name="" type="1"> </proApplication>
+		<AutoApplicationPath>./app/jars/example.jar</AutoApplicationPath>	  
+		<weekend>0,6</weekend>
+		<offday>2006-10-01,2006-10-02,2006-10-03</offday>
+		<workingday>2006-09-30</workingday>
+		<isReturnMessage>false</isReturnMessage>
+		<ProcessExceptionStormNumber>100</ProcessExceptionStormNumber>
+		<metric>false</metric>
+		<componentization>false</componentization>
+	</Enactmentservice>
+    <Monitor>		
+		<Servlet>			
+			<width form="800" name="" type="1">800</width>
+			<height form="600" name="" type="1">600</height>	
+			<dbrmiconnect name="" type="1">rmi://127.0.0.1:8020/rmi</dbrmiconnect>
+		</Servlet>
+	</Monitor>
+	<Wfclient>
+		<Servlet>
+			<publish_dir name="" type="1">F:\SynchroFlowProject\SynchroBPM7.0_Server\tomcat\webapps\frame/</publish_dir>
+			<form_subdir name="" type="1">form/user/</form_subdir>
+			<EnactmentAPI name="" type="1">rmi://127.0.0.1:8020/monitorrmi</EnactmentAPI>
+		</Servlet>
+	</Wfclient>	
+	<Process>		
+		<Servlet>
+		<tempdirectory form="\synchroflow\modelfile\temp" name="" type="1">F:\SynchroFlowProject\SynchroBPM7.0_Server\\flowserver\modelfile\temp</tempdirectory>
+			<formaldirectory form="\synchroflow\modelfile\formal" name="" type="1">F:\SynchroFlowProject\SynchroBPM7.0_Server\\flowserver\modelfile\formal</formaldirectory>
+			<sessionLivingMinute form="1" name="" type="1">240</sessionLivingMinute>			
+		</Servlet> 
+	</Process>
+    <Organization>
+	    <thirdOrgPath name="" type="1"></thirdOrgPath>       
+        <floworg.com.synchrobit.synchroflow.enactmentservice.resourcelocate.ParsePerformer name="" type="1">
+        com.synchrobit.synchroflow.organization.ParticipantParser
+        </floworg.com.synchrobit.synchroflow.enactmentservice.resourcelocate.ParsePerformer> 
+        <floworg.com.synchrobit.synchroflow.api.organization.AuthIfc name="" type="1">
+        com.synchrobit.synchroflow.organization.Authentication
+        </floworg.com.synchrobit.synchroflow.api.organization.AuthIfc> 
+        <floworg.com.synchrobit.synchroflow.api.organization.userDefFun name="" type="1">
+        
+        
+        </floworg.com.synchrobit.synchroflow.api.organization.userDefFun>
+     </Organization>
+	 <EventMessage>
+	     <IsMsnAutoStart>false</IsMsnAutoStart>
+	     <MsnEmail>synchro@hotmail.com</MsnEmail>
+		 <MsnPwd>123456</MsnPwd>
+	 </EventMessage>
+ </Synchroflow>

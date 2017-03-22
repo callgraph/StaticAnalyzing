@@ -1,0 +1,710 @@
+#!/usr/bin/perl
+# -*- tab-width: 4 -*-"
+###############################################
+#
+# $Id: genxref,v 1.66 2012/12/07 12:27:35 ajlittoz Exp $
+#
+#	Runs source-tree indexation
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+###############################################
+
+use strict;
+use lib 'lib', 'scripts';
+use Fcntl;
+use Getopt::Long;
+use IO::Handle;
+use File::MMagic;
+
+use LXR::Files;
+use LXR::Index;
+use LXR::Config;
+use LXR::Common;
+
+use VTescape;
+use Tagger;
+
+my $lxrconf = 'lxr.conf';	# TODO: allow override through an option
+
+my %option;
+GetOptions	(\%option
+			, "help!"
+			, "url=s"
+			, "version=s"
+			, "allurls"
+			, "allversions:s"
+			, "reindexall"
+			, "checkonly"
+			, "accept"
+			);
+
+if ($option{'help'}) {
+
+	# this may not be the best way to implement this, but at least it's something
+	print <<END_HELP;
+Usage: genxref [option ...]
+
+The genxref program automatically generates LXR database cross-reference
+tokens for a set of URL configuration blocks and source code versions.  These
+are both defined in the $lxrconf configuration file.  Each "URL" is a separate
+source tree; LXR separates and identifies these by their URL.  Each "version" is
+a different version of the source tree being indexed.  See file $lxrconf or
+script configure-lxr.pl for configuring URLs and versions.
+
+Valid options are:
+  --help             Print a summary of the options.
+  --url=URL          Generate tokens for the given URL configuration block.
+  --allurls          Generate tokens for all URL configuration blocks.
+  --version=VERSION  Generate tokens for the given version of the code.
+  --allversions      Generate tokens for all versions of the code (default).
+  --reindexall       Purges existing index data
+  --checkonly        Verify tools version and stop
+  --accept           Accept parameter suggestions to continue with indexing
+  
+Report bugs at http://sourceforge.net/projects/lxr/.
+END_HELP
+	exit 0;
+}
+
+my $failure = 0;	# Cumulative failure indicator
+
+if	( !$option{'checkonly'}
+	&& !$option{'url'}
+	&& !$option{'allurls'}
+	) {
+	die("${VTred}ERROR:${VTnorm} in real mode (not checking mode set by ${VTbold}--checkonly${VTnorm}),\n"
+		. "an URL must be specified through ${VTyellow}--url${VTnorm} or ${VTyellow}--allurls${VTnorm}.${VTnorm}\n"
+		. "Try \"genxref --help\".\n");
+}
+
+##############################################################
+#
+#				Read lxr.conf global section
+#
+##############################################################
+
+# Dummy sub to disable 'range' file reads
+sub readfile {}
+
+my @config;
+if (open(CONFIG, $lxrconf)) {
+	my $oldsep = $/;
+	$/ = undef;
+	my $config_contents = <CONFIG>;
+	$/ = $oldsep;
+	close(CONFIG);
+	$config_contents =~ /(.*)/s;
+	$config_contents = $1;    #untaint it
+	@config = eval("\n#line 1 \"configuration file\"\n" . $config_contents);
+	die($@) if $@;
+
+	$config = shift(@config);
+} else {
+	print "${VTred}ERROR:${VTnorm} could not open configuration file ${VTred}$lxrconf${VTnorm}\n";
+	exit(1) unless $option{'checkonly'};
+	$failure |= 1;
+}
+
+
+#######################################
+###
+###               Part 1
+###
+###  Check environment
+###
+###
+
+printf "Checking     Perl     version ... %vd\n", $^V;
+if ($^V ge v5.10.0) {
+	print VTCUU(1), "${VTgreen}[  OK  ]${VTnorm}\n";
+} else {
+	print VTCUU(1), "${VTred}[${VTslow}FAILED${VTnorm}${VTred}]${VTnorm}\n";
+	$failure |= 1;
+}
+
+# Check tools version
+#	Return value:
+#	.	-2.	version too low for forced parm (see 1)
+#	.	-1	version too low
+#	.	0	software tool not found
+#	.	1	OK but conf parm set
+#	.	2	everything fine
+
+sub check_tool {
+	my ($tl_param, $tl_name, $tl_option, $tl_version) = @_;
+	my $tool;
+	my $toolloc;
+	my $toolforced = 0;
+	my $version;
+
+	if ($config && $config->{$tl_param}) {
+		$tool = $config->{$tl_param};
+			# Make further tests on designated tool
+		$toolloc = `command -v $tool 2>/dev/null`;
+		if ($toolloc !~ s/\n$//s) {
+			print "${VTred}'$tl_param' does not name an existing $tl_name utility${VTnorm}\n";
+			delete $config->{$tl_param};
+		} else {
+			my $systoolloc = `command -v $tl_name 2>/dev/null`;
+			if ($systoolloc =~ s/\n$//s) {
+				if ($systoolloc ne $toolloc) {
+					print "${VTyellow}'$tl_param' not equal to `command -v $tl_name`${VTnorm}\n";
+					print "If this is a non-system copy, ignore this warning\n";
+				}
+			}
+		}
+	} else {
+		print("${VTyellow}Parameter '$tl_param' not defined - trying to find $tl_name${VTnorm}\n");
+	}
+	if (!$toolloc) {
+		$toolloc = `command -v $tl_name 2>/dev/null`;
+		$toolloc =~ s/\n$//s;
+	}
+	if (!$toolloc) {
+		print "${VTred}$tl_name not found,${VTnorm} `command -v $tl_name` returned a null string\n";
+		if ($config) {
+			delete $config->{$tl_param};
+		}
+		return 0;
+	}
+	if ($config) {
+		if (!$config->{$tl_param}) {
+			$config->{$tl_param} = $toolloc;
+			$toolforced = 1;
+			$tool = $toolloc;
+			print "$tl_name found at ${VTyellow}$toolloc${VTnorm}\n";
+			print "Manually update $lxrconf for permanent setting if needed\n";
+		}
+	} else {
+		print "$tl_name found at ${VTyellow}$toolloc${VTnorm}\n";
+		$tool = $toolloc;
+	}
+
+	my $nmwidth = 14;
+	print "Checking", ' 'x(($nmwidth-length($tl_name)+1)/2);
+	print $tl_name, ' 'x(($nmwidth-length($tl_name))/2);
+	print "version ... ";
+	$version = `$tool $tl_option`;
+	if ($version =~ m/.*$tl_name .*?((\d+\.)*\d+)/i) {
+		$version = $1;
+	} else {
+		$version = undef;
+	}
+	print "$version\n";
+	if (defined($tl_version) && $tl_version ne '0') {
+		if	(  !defined($version)
+			|| eval( 'v' . $version) lt eval( 'v' . $tl_version)
+			) {
+			print VTCUU(1), "${VTred}[${VTslow}FAILED${VTnorm}${VTred}]${VTnorm}\n";
+			print "$tl_name version $tl_version or above required, found $version\n";
+			return -1 - $toolforced; 
+		} else {
+			print VTCUU(1), "${VTgreen}[  OK  ]${VTnorm}\n";
+		}
+	} else {
+			print VTCUU(1), "${VTyellow}Checked:${VTnorm}\n";
+	}
+	return 2 -$toolforced;
+}
+
+my $foundglimpse = 0;
+my $foundswishe = 0;
+
+my $ct = check_tool('ectagsbin', 'ctags', '--version', '5');
+if ($ct == 0) {
+	print "genxref can't index source-tree without ctags\n";
+	print "Find its location or install it and fix 'ectagsbin'\n";
+	$failure |= 1;
+} elsif ($ct == 1) {
+	print "ctags fixed for genxref, but LXR browsing will not work\n";
+	$failure |= 2;
+} elsif ($ct < 0) {
+	$failure |= 1;
+}
+
+$foundglimpse = check_tool('glimpsebin', 'glimpse', '-V', '0');
+check_tool('glimpseindex', 'glimpseindex', '-V', '0');
+$foundswishe = check_tool('swishbin', 'swish-e', '-V', '2.1');
+
+#	The following verifications are a bit "over-kill"
+#	because there is presently no check on version level
+#	on glimpse. But that could change in the future.
+if ($foundglimpse == 0 && $foundswishe == 0) {
+	# No engine defined - propose to go on without
+	print "${VTyellow}Neither 'glimpsebin' nor 'swishbin' defined${VTnorm}\n";
+	print "${VTyellow}Disabling free-text search${VTnorm}\n";
+	if ($config) {
+		$config->{'glimpsebin'} = '/usr/bin/true';
+	}
+	$failure |= 2;
+} elsif ($foundglimpse == 2 && $foundswishe == 2) {
+	# Both engines defined - do not know what to do
+	print "${VTred}Both 'glimpsebin' and 'swishbin' defined${VTnorm}\n";
+	print "Choose one of them by commenting the other in $lxrconf\n";
+	$failure |= 1;
+} elsif ($foundglimpse <= 0 && $foundswishe <= 0) {
+	# Can't use any search engine
+	# (either not found or version too low)
+	# But check if user disabled free-text search with suggested tip
+	if	(	$foundglimpse < 0	# true has no version
+			&& $config->{'glimpsebin'} =~ m:(^|/)true$:
+			&& $foundswishe == 0
+		||	$foundswishe < 0
+			&& $config->{'swishbin'} =~ m:(^|/)true$:
+			&& $foundglimpse == 0
+		) {
+	#	Leave $failure "as is" when user disables search
+	} else {
+		$failure |= 1
+	}
+} elsif ($foundglimpse == 1 && $foundswishe <= 1) {
+	# glimpse has been forced, but glimpse is prefered if both
+	print "${VTyellow}Warning:${VTnorm} using existing ${VTbold}glimpse${VTnorm}\n";
+	delete $config->{'swishbin'} if ($config);
+	$failure |= 2;
+} elsif ($foundswishe == 1 && $foundglimpse <= 0) {
+	# swish-e has been forced, but glimpse is prefered if both
+	print "${VTyellow}Warning:${VTnorm} using existing ${VTbold}swish-e${VTnorm}\n";
+	delete $config->{'glimpsebin'} if ($config);
+	$failure |= 2;
+} elsif ($foundglimpse == 2) {
+	# Standard glimpse selection, but for the case of both
+	# engines present and swish-e has too low a version
+	if ($foundswishe == -1) {
+		print "${VTyellow}Warning:${VTnorm} forcing use of ${VTbold}glimpse${VTnorm}\n";
+		delete $config->{'swishbin'} if ($config);
+		$failure |= 2;
+	}
+} elsif ($foundswishe == 2) {
+	# Standard swish-e selection, but for the case of both
+	# engines present and glimpse has too low a version
+	if ($foundglimpse == -1) {
+		print "${VTyellow}Warning:${VTnorm} forcing use of ${VTbold}swish-e${VTnorm}\n";
+	delete $config->{'glimpsebin'} if ($config);
+		$failure |= 2;
+	}
+}
+
+# End of general checks
+if ($option{'checkonly'}) {
+	print "${VTyellow}genxref stopped without indexing by --checkonly option${VTnorm}\n";
+	exit;
+}
+if ($failure > 1) {
+	if ($option{'accept'}) {
+		print "\nParameter changes accepted by option --accept without writing them in $lxrconf\n";
+		print "Indexing may eventually complete but expect malfunction in LXR browsing\n";
+		print "till you fix configuration file $lxrconf\n\n";
+		$failure = 0;
+	} else {
+		print "\ngenxref suggested changes to your configuration\n";
+		print "You can test their effect with option ${VTyellow}--accept${VTnorm}\n";
+	}
+}
+if ($failure > 0) {
+	die "${VTred}Aborting due to previous errors${VTnorm}";
+}
+
+
+#######################################
+###
+###               Part 2
+###
+###  Index source tree(s)
+###
+###
+
+my %versionset;		# cumulative version set
+my $autoversionflag;
+my %binaryfiles;
+
+my $printdirbanner;	# Flag to print again directory banner
+# Frequency of directory name repetition
+my $repeatbannerevery = 25;
+my $repeatbannercountdown = $repeatbannerevery;
+
+our $filetype = File::MMagic->new(-f 'lib/magic.mime'? ('lib/magic.mime') : ());
+
+my $hostname = $config->{'host_names'}[0];
+if ($option{'url'}) {	# Single 'url'
+	@config = (1);		# Fake list to prevent looping
+}
+
+foreach my $treedescr (@config) {
+	my $url;
+	if ($option{'url'}) {
+		$url = $option{'url'};
+		$config = LXR::Config->new($url);
+	} else {
+		if (defined($hostname)) {
+			$url = $hostname . $treedescr->{'virtroot'};
+		} else {
+			$url = $treedescr->{'baseurl'};
+		}
+		$config = LXR::Config->new($url);
+		print STDERR "\n${CSI}44m${VTwhite}Processing $url${VTnorm}\n";
+	}
+
+	die("${VTred}No matching configuration${VTnorm}") unless exists($config->{'sourceroot'});
+
+	if (!exists($config->{'sourceroot'})) {
+		die "${VTred}No 'sourceroot' for "
+			. $config->{'virtroot'}
+			. " - Can't run${VTnorm}\n";
+	}
+
+	if (!exists($config->{'variables'}{'v'})) {
+		die "${VTred}Variable 'v' needed to define versions "
+			. $config->{'virtroot'}
+			. " - Can't run${VTnorm}\n";
+	}
+
+	$files = LXR::Files->new($$config{'sourceroot'}, $$config{'sourceparams'});
+	die "${VTred}Can't create file access object ${VTnorm}" . $$config{'sourceroot'}
+		if !defined($files);
+	$index = LXR::Index->new($config->{'dbname'}, O_RDWR | O_CREAT);
+	die "${VTred}Can't create Index ${VTnorm}" . $config->{'dbname'}
+		if !defined($index);
+
+	%binaryfiles = ();
+
+	my @versions;
+	$autoversionflag = 0;
+	$repeatbannercountdown = $repeatbannerevery;
+
+
+	if (exists($option{'allversions'}) || !exists($option{'version'})) {
+		if	(  $files->isa("LXR::Files::CVS")
+			&& ref($config->{'variables'}{'v'}{'range'}) eq "CODE"
+			) {
+			print STDERR "Using automatic CVS version enumeration\n";
+			$autoversionflag = 1;
+		} else {
+			@versions = $config->varrange('v');
+			die "${VTred}Option --allversions cannot be used because no versions found automatically.${VTnorm}"
+				. "Use --version=VERSION or fix $lxrconf.\n"
+				if scalar @versions <= 0;
+		}
+	} else {
+		@versions = $option{'version'};
+	}
+
+	%versionset = ();
+	if ($files->isa("LXR::Files::CVS") && scalar(@versions)<=0) {
+		$index->purgeall;
+		$$LXR::Common::HTTP{'param'}{'_showattic'} = 1;
+		$printdirbanner = 1;
+		directorytreetraversal	( \&Tagger::processfile
+								, 'head'
+								, ''
+								, '/'
+								);
+		$printdirbanner = 1;
+		directorytreetraversal	( \&Tagger::processrefs
+								, 'head'
+								, ''
+								, '/'
+								);
+		if ( exists($option{'allversions'})
+			&& $option{'allversions'} ne "noauto"
+			) {
+			dump_versionset("CVS", \%versionset);
+		}
+
+	} else {
+
+#	purgeall() is much faster than a sequence of purge($version);
+#	if there is only one version in the range, use it instead of
+#	an individual purge($version).
+#	In incremental indexing (no --reindexall), every file must
+#	later be carefully examined to determined if a very
+#	selective DB cleaning is needed.
+		my $dopurge = 0;
+		my $docareful = 0;
+		if (exists($option{'reindexall'})) {
+			if	( exists($option{'allversions'})
+				|| exists($option{'version'}) && (1 == $config->varrange('v'))
+				|| !exists($option{'version'})
+				) {
+				$index->purgeall;
+			} else {
+				$dopurge = 1
+			}
+		} else {
+			$docareful = 1;
+		}
+
+		foreach my $version (@versions) {
+			print STDERR "\n${CSI}44m${VTwhite}Processing $url ${VTnorm}"
+					, " == "
+					, "${CSI}41m${VTwhite}Version $version ${VTnorm}\n" ;
+			if ($dopurge) {
+				print STDERR "\nSelective database purge ... ${VTyellow}${VTslow}in progress${VTnorm}\n";
+				$index->purge($version);
+				print STDERR &VTCUU(1), &VTCHA(30), &VTEL(0), "${VTgreen}Done${VTnorm}\n";
+			}
+			if ($docareful) {
+				cleanindex($version);
+			}
+			if ($files->isa("LXR::Files::Plain")) {
+				if ($foundglimpse > 0 || $foundswishe > 0) {
+					gensearch($version);
+				} else {
+					print STDERR "${VTyellow}Free-text search disabled${VTnorm}\n";
+				}
+				print STDERR "\n";
+			} else {
+				print STDERR "${VTyellow}Free-text search setup suppressed for VCS storage${VTnorm}\n";
+			}
+			$printdirbanner = 1;
+			directorytreetraversal	( \&Tagger::processfile
+									, $version
+									, ''
+									, '/'
+									);
+			$printdirbanner = 1;
+			directorytreetraversal	( \&Tagger::processrefs
+									, $version
+									, ''
+									, '/'
+									);
+		}
+	}
+
+	$index->final_cleanup();
+}
+
+
+#######################################
+###
+###               Annex
+###
+###  Support routines
+###
+###
+
+sub dirbannerprint {
+	my ($head, $releaseid, $dirname, $filename) = @_;
+	my $editpos = 3 + length($head) + length($releaseid) + length($dirname);
+
+	if ($printdirbanner ) {
+		print(STDERR "${VTmagenta}$head $releaseid $dirname");
+		$printdirbanner = undef;
+	} else {
+		print(STDERR &VTCUU(1), &VTCHA($editpos), &VTEL(0), "${VTmagenta}")
+	}
+	$repeatbannercountdown = $repeatbannerevery;
+	print(STDERR "$filename${VTnorm}\n");
+}
+
+sub directorytreetraversal {
+	my ($process_sub, $releaseid, $dirname, $filename) = @_;
+	my $pathname = $dirname . $filename;
+
+	if ($filename =~ m|/$|) {
+		dirbannerprint('***', $releaseid, $dirname, $filename);
+		my $needbanner;
+		map {	my $node = $_;
+				my $type = substr($node, -1);
+				$needbanner //= $type eq '/';
+				if	(	$type ne '/'
+					&&	(  $needbanner && $printdirbanner
+# 						|| $repeatbannercountdown <= 0
+						)
+					) {
+					$needbanner = undef;# if $repeatbannercountdown <=0;
+					dirbannerprint("***", $releaseid, $dirname, $filename);
+				}
+				directorytreetraversal	( $process_sub
+										, $releaseid
+										, $pathname
+										, $_
+										);
+			} $files->getdir($pathname, $releaseid);
+		$index->forcecommit();
+	} elsif (!exists  $binaryfiles{$pathname}) {
+		my $didprocess;
+		if	($autoversionflag) {
+		# Some 'Files' objects need this variable properly set to
+		# determine the possible versions for a file,
+		# in particular to return correct values for varrange sub.
+			$LXR::Common::pathname = $pathname;
+			my @versions = $config->varrange('v');
+			foreach my $releaseid (@versions) {
+				if ($repeatbannercountdown <=0) {
+					$printdirbanner = 1;
+					dirbannerprint("***", $releaseid, $dirname, '');
+				}
+				$versionset{$releaseid} = '';	# remember this version
+				my $didoneprocess = &$process_sub($pathname, $releaseid, $config, $files, $index);
+				$repeatbannercountdown-- if $didoneprocess;
+				$didprocess //= $didoneprocess;
+			}
+		} else {
+			if ($repeatbannercountdown <=0) {
+				$printdirbanner = 1;
+				dirbannerprint("***", $releaseid, $dirname, '');
+			}
+			$didprocess = &$process_sub($pathname, $releaseid, $config, $files, $index);
+			$repeatbannercountdown-- if $didprocess;
+		}
+		$printdirbanner //= $didprocess;
+	}
+}
+
+sub feedswish {
+	my ($pathname, $releaseid, $swish, $filelist) = @_;
+
+	if ($pathname =~ m|/$|) {
+		print(STDERR "&&& $pathname $releaseid \n");
+		map { feedswish($pathname . $_, $releaseid, $swish, $filelist) }
+		  $files->getdir($pathname, $releaseid);
+	} else {
+		if (my $fh = $files->getfilehandle($pathname, $releaseid)) {
+			if ($files->getfilesize($pathname, $releaseid) > 0
+				&& $filetype->checktype_filehandle($fh) =~ m%(text|message)/%)
+			{
+				print(STDERR "&&> $pathname $releaseid \n");
+				print $filelist "$pathname\n";
+				my $contents = $files->getfile($pathname, $releaseid);
+				$swish->print(
+					"Path-Name: $pathname\n",
+					"Content-Length: " . length($contents) . "\n",
+					"Document-Type: TXT\n",
+					"\n", $contents
+				);
+			} else {
+				$binaryfiles{$pathname} = 1;
+			}
+			close($fh);
+		}
+	}
+}
+
+sub gensearch {
+	my ($releaseid) = @_;
+	my $string;
+
+	if ($config->{'glimpsedir'} && $config->{'glimpseindex'}) {
+
+		$string = $config->glimpsedir . "/" . $releaseid;
+		mkdir $string;
+		system("chmod 755 $string");   # TODO - fix Unix specific call?
+		my $glimpse = IO::Handle->new();
+		my $pid = open($glimpse, "|-");
+		if ($pid == 0) {
+			exec($config->glimpseindex, "-n", "-o", "-H",
+				$config->glimpsedir . "/$releaseid",
+				$config->sourceroot . "/" . $releaseid
+			);
+			print(STDERR "Couldn't exec " . $config->glimpseindex . ": $!\n");
+			kill(9, $$);
+		}
+		$glimpse->close();
+
+		# Need to chmod the glimpse files so everybody can read them.
+		$string = $config->glimpsedir . "/" . $releaseid . "/.glimpse\*";
+		system("chmod 644 $string");
+	}
+
+	if ($config->{'swishdir'} && $config->{'swishbin'}) {
+		my $swish = IO::Handle->new();
+		die ${VTred} . $config->swishdir . " does not exist${VTnorm}"
+			unless -d $config->swishdir;
+		my $filelist = IO::File->new($config->swishdir . "/$releaseid.filenames", "w")
+		  or die "${VTred}can't open $releaseid.filenames for writing${VTnorm}";
+
+		# execute swish, as a pipe we can write to
+
+		open($swish,
+			    "| "
+			  . $config->swishbin
+			  . " -S prog -i stdin -v 1 -c ".$config->{'swishconf'}
+			  . " -f ".$config->swishdir."/".$releaseid.".index"
+			)
+		  or die ${VTred} . "Couldn't exec " . $config->swishbin . ":${VTnorm $!}\n";
+
+		feedswish("/", $releaseid, $swish, $filelist);
+
+		$swish->close();
+		$filelist->close();
+	}
+}
+
+sub dump_versionset {
+	my ($prefix, $versionset) = @_;
+	my $vfh;
+
+	my $virtroot = $config->{'virtroot'};
+	$virtroot =~ s|([^-a-zA-Z0-9.\@_])|sprintf("%%%02X", ord($1))|ge;
+	my $versionfile = "custom.d/$prefix$virtroot";
+	if (!open($vfh, ">", $versionfile)) {
+		print "${VTyellow}Can't open : version set not saved${VTnorm}\n";
+		return;
+	}
+	my $count = 0;
+	foreach my $version (sort keys %$versionset) {
+		$count++;
+		print $vfh $version, "\n";
+	}
+	close($vfh);
+	print "=== $count versions written to ${VTyellow}$versionfile${VTnorm}\n";
+}
+
+#	Look at each file recorded in the DB for this version
+#	and check if it has changed.
+#	A filename+release is translated into a revision id.
+#	Note that deleted/moved files will return undef.
+#	The revision id is compared to the recorded revision.
+#	If they do not match, all information pertaining to
+#	the recorded revision is erased.
+#
+#	Since the candidate files are more frequently replaced
+#	than deleted, symbols are not erased when their reference
+#	counts decrement to zero because the new file version will
+#	very likely reuse these symbols. Definitions and references
+#	are always erased.
+#	There is a small penalty for non-reused symbols, but this is
+#	fixed on next reindexall.
+sub cleanindex {
+	my $releaseid = shift;
+	my @files;		# Files from the DB for this release
+	my $dirname;
+	my $filename;
+
+	$index->getallfilesinit($releaseid);
+	while (my ($fid, $pathname, $revision, $relcount) = $index->nextfile()) {
+		next if $files->filerev($pathname, $releaseid) == $revision;
+		$pathname =~ m!(.*/)(.+)$!;
+		$filename = $2;
+		if ($dirname ne $1) {
+			$dirname = $1;
+			print STDERR "${VTmagenta}%%% $releaseid $dirname${VTnorm}\n";
+		}
+		print STDERR "--- $releaseid $filename $revision";
+		print STDERR " ... ${VTyellow}${VTslow}cleaning${VTnorm}";
+		print STDERR VTCUB(12);
+#		$index->emptycache();
+		if ($relcount > 1) {
+			print STDERR VTEL(0), "${VTred}not purgeable yet${VTnorm}\n";
+		} else {
+			$index->purgefile($fid, $releaseid);
+			print STDERR VTEL(0), "${VTyellow}purged${VTnorm}\n";
+		}
+		$index->removerelease($fid, $releaseid);
+		$index->forcecommit();
+	}
+}

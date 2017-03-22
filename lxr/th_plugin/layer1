@@ -1,0 +1,76 @@
+<g
+  id="ju11"
+        visibility="hidden">    
+   <rect
+       style="fill:#EFE9CE;display:inline"
+       id="jure11"
+       width="120"
+       height="32"
+       x="22"
+       y="293" 
+       />
+    <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="jute11"
+         font-size="10.00"
+         x="28"
+         y="316">further diff</text>
+
+ </g>
+ <g
+  id="ju12"
+  visibility="hidden">
+    <rect
+       style="fill:#AAD5EF;display:inline"
+       id="jure12"
+       width="120"
+       height="32"
+       x="22"
+       y="325" 
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="jute12"
+         font-size="10.00"
+         x="28"
+         y="348">specific diff</text>
+
+ </g>
+ <g
+        id="ju16"
+        visibility="hidden">
+    <rect
+       style="fill:#DB7093;display:inline"
+       id="jure16"
+       width="120"
+       height="32"
+       x="22"
+       y="357"
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="jute16"
+         font-size="10.00"
+         x="28"
+         y="380">comment</text>
+</g>
+<g
+  id="ju13"
+  visibility="hidden"
+ >
+    <rect
+       style="fill:#EFE9CE;display:inline"
+       id="jure13"
+       width="120"
+       height="32"
+       x="22"
+       y="293" 
+      />
+     <text
+         style="font-size:14px;text-anchor:middle;font-family:'Times Roman,serif'"
+         id="jute13"
+         font-size="10.00"
+         x="28"
+         y="316">call list</text>
+
+ </g>

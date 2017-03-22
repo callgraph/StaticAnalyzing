@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serviceGroup>
+	<service name="getList" scope="application">
+		<description>
+			POJO Service
+    </description>
+		<messageReceivers>
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+				class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+				class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+		</messageReceivers>
+		<parameter name="ServiceClass">com.wuz.serv.core.ws.impl.getListFromServ
+		</parameter>
+	</service>
+	<service name="getSVGImg" scope="application">
+		<description>
+			POJO Service
+    </description>
+		<messageReceivers>
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+				class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+				class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+		</messageReceivers>
+		<parameter name="ServiceClass">com.wuz.serv.core.ws.impl.getSVGImgFromServ
+		</parameter>
+	</service>
+	<service name="getVulnerMap" scope="application">
+		<description>
+			POJO Service
+    </description>
+		<messageReceivers>
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+				class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+				class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+		</messageReceivers>
+		<parameter name="ServiceClass">com.wuz.serv.core.ws.impl.getVulMap
+		</parameter>
+	</service>
+	<service name="getTaintTrace" scope="application">
+		<description>
+			POJO Service
+    </description>
+		<messageReceivers>
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+				class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+			<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+				class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+		</messageReceivers>
+		<parameter name="ServiceClass">com.wuz.serv.core.ws.impl.getTaintTrace
+		</parameter>
+	</service>
+ <service name="chooseService" scope="application">
+                <description>
+                        POJO Service
+    </description>
+                <messageReceivers>
+                        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only"
+                                class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+                        <messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-out"
+                                class="org.apache.axis2.rpc.receivers.RPCMessageReceiver" />
+                </messageReceivers>
+                <parameter name="ServiceClass">com.wuz.serv.core.ws.impl.chooseService
+                </parameter>
+        </service>
+
+	<transports>
+		<transport>soap</transport>
+	</transports>
+</serviceGroup>

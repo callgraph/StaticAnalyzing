@@ -1,0 +1,141 @@
+#!/usr/bin/perl -T
+# $Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $
+
+# diff --	Display diff output with markup.
+#
+#	Arne Georg Gleditsch <argggh@ifi.uio.no>
+#	Per Kristian Gjermshus <pergj@ifi.uio.no>
+#
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+######################################################################
+
+$CVSID = '$Id: diff,v 1.31 2013/01/11 14:43:47 ajlittoz Exp $ ';
+
+#use strict;
+use lib do { $0 =~ m{(.*)/} ? "$1/lib" : "lib" }; # if LXR modules are in ./lib
+
+use LXR::Common;
+use LXR::Markup;
+use LXR::Template;
+use Local;
+use FileHandle;
+@docxygen=("","","","","","","linux-3.5.4","x86_32","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-pandaboard","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-galaxy-nexus","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-Raspberrypi","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_64","real","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_32","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-pandaboard","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-galaxy-nexus","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","arm-Raspberrypi","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.5.4","x86_64","virtual","iscas","http://124.16.141.171:81/lxr/source/","http://124.16.141.171:81/mediawiki/index.php/","linux-3.8","arm-pandaboard","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-galaxy-nexus","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-Raspberrypi","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_32","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_64","real","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-pandaboard","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-galaxy-nexus","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","arm-Raspberrypi","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_32","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-3.8","x86_64","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-pandaboard","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-galaxy-nexus","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-Raspberrypi","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_32","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_64","real","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-pandaboard","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-galaxy-nexus","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","arm-Raspberrypi","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_32","virtual","iscas","http://124.16.141.130/lxr/source/","","linux-2.6.39.4","x86_64","virtual","iscas","http://124.16.141.130/lxr/source/",""
+);
+$length=@docxygen;
+
+sub call{   
+     
+print("<form memethod=get action=\"vulnermap\"> <input type=\"hidden\" name=\"v\" value=\"",$ENV{'QUERY_STRINGSID'},"\">");
+print("<input type=\"hidden\" name=\"f\" value=\"",$ENV{'QUERY_STRINGFID'},"\">");
+print("<input type=\"hidden\" name=\"a\" value=\"",$ENV{'QUERY_STRINGPID'},"\">");
+print("Path0: <input type=text name=\"path0\" ","value=\"",$path0,"\" size=20 >\n");
+print("Path1: <input type=text name=\"path1\" ","value=\"",$path1,"\" size=20 >\n");
+print("<input type=\"checkbox\" name=\"checkbox1\" value=\"1\" $checked> zoom\n");
+print("<input type=submit value=\"map\">\n","</form>\n");
+if ($path0 ne "" || $path1 ne "")
+{
+   if ($checked eq "1")
+   {
+       $c1=sprintf("t1");
+    }
+    else
+    {
+       $c1=sprintf("t0");
+    }
+if($path0 ne "")
+{
+   if ($path0 eq "*")
+   {
+       $path00=sprintf("root");
+   }
+   else
+   {
+   $path00=$path0;
+   }
+}
+else
+{
+   $path00=sprintf("NULL");
+}
+if($path1 ne "")
+{
+  if ($path1 eq "*")
+  {
+     $path11=sprintf("root");
+   }
+   else
+   {
+      $path11=$path1;
+    }
+}
+else
+{
+  $path11=sprintf("NULL");
+}
+   (my $url = $config->baseurl) =~ s!/*$!/!;
+
+        $url =~ s/([\?\&\;\=\'\"])/sprintf('%%%02x',(unpack('c',$1)))/ge;
+$ttbasurl=sprintf("http://124.16.141.184/lxr");
+#$code_url=sprintf("https://github.com/xyongcn/Kernel3.5.4Analysis/blob/master/");
+   $docxygen_flag=0;
+   for($i=0;$i<$length;$i+=6){
+        if(($docxygen[$i] eq $ENV{'QUERY_STRINGSID'})&&($docxygen[$i+1] eq $ENV{'QUERY_STRINGPID'})&&($docxygen[$i+2] eq $ENV{'QUERY_STRINGFID'}) )
+        {
+              if($docxygen[$i+3] eq "docxygen")
+             {
+                $docxygen_flag=1;
+             }
+             else
+             {
+                $docxygen_flag=0;
+             }
+             $code_url=$docxygen[$i+4];
+             $note_url=$docxygen[$i+5];
+             break;
+        }
+   }
+
+
+ $temp_sh=$config->sourceroot;
+ $temp_shrb=$temp_sh;
+ $temp_shrb=~s/source\//lxr\/.\/vulnermap-perl/;
+ $temp_shsp=$temp_sh;
+ $temp_shsp=~s/source\//lxr\/source1/;
+ $temp_shy=$temp_sh;
+ $temp_shy=~s/source/lxr\//;
+
+
+#print($temp_shrb."*".$ENV{'QUERY_STRINGSID'}."*".$ENV{'QUERY_STRINGPID'}."*".$ENV{'QUERY_STRINGFID'}."*".$path00."*".$path11."*".$c1."*".$temp_shsp."*".$temp_shy."*".$ttbasurl."*".$temp_shsp."*".$code_url);
+system("$temp_shrb $ENV{'QUERY_STRINGSID'} $ENV{'QUERY_STRINGPID'} $ENV{'QUERY_STRINGFID'} $path00 $path11 $c1 $temp_shsp $temp_shy $ttbasurl $temp_shsp $code_url $note_url");
+#system("/home/hwei/lxr/./callgraph-perl  $ENV{'QUERY_STRINGSID'} $ENV{'QUERY_STRINGPID'}  $path00 $path11 $c1 /home/hwei/lxr/source1 /home/hwei/ $url /home/hwei/lxr/source1");
+#print($ttbasurl);
+# system("/home/hwei/lxr/./temptest  $ttbasurl  xxxx");
+#print("/home/hwei/./callgraph-perl".$ENV{QUERY_STRINGSID}.$ENV{'QUERY_STRINGPID'}."kk".$path00."kk".$path11."kk".$c1."kk"." /home/hwei/lxr/source1 /home/hwei/".$config->baseurl."/home/hwei/lxr/source1");
+}
+
+}
+httpinit;
+$path0 =$HTTP->{'param'}->{'path0'};
+$path1 =$HTTP->{'param'}->{'path1'};
+$checked=$HTTP->{'param'}->{'checkbox1'};
+$sid=$HTTP->{'param'}->{'v'};
+makeheader('vulnermap');
+&call;
+makefooter('vulnermap');
+
+httpclean;
+

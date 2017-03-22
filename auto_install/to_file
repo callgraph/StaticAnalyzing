@@ -1,0 +1,88 @@
+#!/bin/bash
+jspath="/usr/local/share/cg-rtl/lxr/templates/html/html_head_btn_files/plat.js"
+function modifyline(){     
+    arr=($@)
+   arr_len=${#arr[@]}
+case $arr_len in 
+           2 )
+#  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\"]);"
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\"]);" >>$jspath
+
+;;
+esac
+case $arr_len in 
+           3 )
+ # echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\"]);"
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\"]);" >>$jspath
+;;
+esac
+case $arr_len in 
+           4 )
+ #echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\"]);"
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\"]);" >>$jspath
+;;
+esac
+case $arr_len in 
+           5)
+#echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\",\"${arr[4]}\"]);"
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\",\"${arr[4]}\"]);" >>$jspath
+;;
+esac
+case $arr_len in 
+           6)
+#echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\",\"${arr[4]}\",\"${arr[5]}\"]);"
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\",\"${arr[4]}\",\"${arr[5]}\"]);" >>$jspath
+;;
+esac
+case $arr_len in 
+           7)
+  echo "dsy.add(\"${arr[0]}\",[\"${arr[1]}\",\"${arr[2]}\",\"${arr[3]}\",\"${arr[4]}\",\"${arr[5]}\",\"${arr[6]}\"]);" >>$jspath
+;;
+esac
+}
+
+
+getdir (){
+dir=(`
+for ((j=2 ; $j<$len ; j=$j+3));do
+if [ ${info_arr[j-2]} = ${ver[$k]} ];then
+if [ ${info_arr[j-1]} = ${plat[$l]} ];then
+echo ${info_arr[j]}
+fi
+fi
+done |awk '{a[$1]}END{for( i in a) print i}'`)
+((platn=$l-1))
+dir=("${plat[0]}_$platn" "${dir[@]}")
+modifyline ${dir[@]}
+
+#echo ${dir[@]}
+#################
+}
+info_arr=($@)
+len=${#info_arr[@]}
+ver=(`
+for ((j=0 ; $j<$len ; j=$j+3));do
+echo ${info_arr[j]}
+done |awk '{a[$1]}END{for( i in a) print i}'`)
+ver=(0 ${ver[@]} )
+modifyline ${ver[@]}
+
+############
+for ((k=1 ; $k<${#ver[@]} ; k=$k+1));do
+plat=(`
+for ((j=1 ; $j<$len ; j=$j+3));do
+if [ ${info_arr[j-1]} = ${ver[$k]} ];then
+echo ${info_arr[j]}
+fi
+done |awk '{a[$1]}END{for( i in a) print i}'`)
+((vern=$k-1))
+plat=("0_$vern" "${plat[@]}")
+modifyline ${plat[@]}
+#echo ${plat[@]}
+###################
+for ((l=1 ; $l<${#plat[@]} ; l=$l+1));do
+getdir  
+#dir=("${plat[0]}_\($l-1\)" "${dir[@]}")
+done
+done
+
