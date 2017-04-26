@@ -24,7 +24,7 @@ git clone https://github.com/callgraph/StaticAnalyzing.git
 
 3.1
 apt-get install mysql-server mysql-client
-其中会弹出窗口要求输入mysql的密码，直接按下回车即可（设置密码为空）
+其中会弹出窗口要求输入mysql的密码，设置密码123456
 由于需要把数据库链接到存储空间上，/mnt下应该已经挂载好了freenas
 cd /var/lib/ 
 cp -a mysql /mnt/freenas/mysql  
