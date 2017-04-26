@@ -18,7 +18,7 @@ apt-get install git
 cd /home/zhangsan 
 mkdir work  
 cd work 
-git clone https://jiadi:jdi5609@github.com/xyongcn/db-rtl-callgraph.git  
+git clone https://github.com/callgraph/StaticAnalyzing.git  
 
 3. 安装数据库
 
