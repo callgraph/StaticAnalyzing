@@ -72,8 +72,8 @@ envir1.sh脚本中会有语句将lxr移动到这个路径下
 如果是一台从未进行过部署的机器的话，则还需执行envir1.sh脚本（只需要运行一次,路径为：/mnt/freenas/DCG-RTL/source/db-rtl-callgraph/auto_install）
 显示以下提示时
 echo "*** MySQL - Creating global user lxr"
-Enter password:   #直接按下回车
-Enter password:   #直接按下回车
+Enter password:   #123456
+Enter password:   #123456
 
 
 8. 编辑/mnt/freenas-intel/DCG-RTL/source/db-rtl-callgraph/auto_install/conf
