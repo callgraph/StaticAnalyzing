@@ -61,9 +61,9 @@ envir1.sh脚本中会有语句将lxr移动到这个路径下
 这里以当前机器的ip地址为124.16.141.184为例，如果不是，则都要进行相应的修改。  
 1、	修改/lxr/lxr.conf  
     ,’host_names’=>[‘//localhost’,’//124.16.141.184’]  
-2、	修改call  
+2、	修改/lxr/call  
     $ttbasurl=sprintf(“http://124.16.141.184/lxr”);  
-3、	修改watchlist  
+3、	修改/lxr/watchlist  
     $ttbasurl=sprintf(“http://124.16.141.184/lxr”);  
 如果有vulnermap、inst、diffe、energy、import、binder和taintrace的话也需要进行同样的修改。  
 
