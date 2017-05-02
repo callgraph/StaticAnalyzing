@@ -1,4 +1,4 @@
-﻿db-rtl-callgraph
+db-rtl-callgraph
 ================
 
 DataBase and RTL based CallGraph
