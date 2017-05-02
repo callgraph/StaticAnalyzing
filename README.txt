@@ -144,63 +144,7 @@ finalrline.rb linux-3.5.4 x86_32
 为每个内核版本在lxr文件夹下建立软链接,以linux-3.5.4为例
 ln -s /mnt/freenas/DCG_RTL/source/linux-3.5.4 /usr/local/share/cg-rtl/lxr/lxr-code/
 
-安装doxygen
-apt-get install doxygen
 
-修改complier文件夹下的config_doxygen文件，修改其INPUT和OUTPUT_DIRECTORY中的内容，以linux-3.5.4为例
-INPUT=/mnt/freenas/DCG-RTL/source/linux-3.5.4
-OUTPUT_DIRECTORY=/var/www/doxygen_kernel/linux-3.5.4
-
-执行congfig_doxygen脚本
-doxygen config_doxygen
-11.如果要新增加部署版本，则重复步骤8,9,10即可
-增加新版本后lxr/templates/html/html_head_btn_files下的plat.js文件内容可能会乱，以linux-3.5各个版本为例，将此文件按照如下格式进行修改：
-dsy.add("0",["linux-3.5","linux-3.5.1","linux-3.5.2","linux-3.5.3","linux-3.5.4","linux-3.5.5","linux-3.5.6","linux-3.5.7"]);
-dsy.add("0_0",["x86_32","x86_64"]);
-dsy.add("0_0_0",["real"]);
-dsy.add("0_0_1",["real"]);
-dsy.add("0_1",["x86_32","x86_64"]);
-dsy.add("0_1_0",["real"]);
-dsy.add("0_1_1",["real"]);
-dsy.add("0_2",["x86_32","x86_64"]);
-dsy.add("0_2_0",["real"]);
-dsy.add("0_2_1",["real"]);
-dsy.add("0_3",["x86_32","x86_64"]);
-dsy.add("0_3_0",["real"]);
-dsy.add("0_3_1",["real"]);
-dsy.add("0_4",["x86_32","x86_64"]);
-dsy.add("0_4_0",["real"]);
-dsy.add("0_4_1",["real"]);
-dsy.add("0_5",["x86_32","x86_64"]);
-dsy.add("0_5_0",["real"]);
-dsy.add("0_5_1",["real"]);
-dsy.add("0_6",["x86_32","x86_64"]);
-dsy.add("0_6_0",["real"]);
-dsy.add("0_6_1",["real"]);
-dsy.add("0_7",["x86_32","x86_64"]);
-dsy.add("0_7_0",["real"]);
-dsy.add("0_7_1",["real"]);
-
-######12. 动态数据处理成标准格式
-a、self_time.py，把动态数据转化为标准格式并计算每个函数执行时间  
-1)、需要更改动态数据对应的名和标准化的数据名（包含函数执行时间）  
-2)、python self_time.py    
-b、total_time.py:每个函数所有的执行之和    
-1)、需要更改动态数据标准化的数据名和每个函数执行时间  
-2)、python total_time.py
-
-######13.动态数据倒入数据库
-1) 以x86_32平台的linux-3.5.4内核举例： 
-EnterDynamic-S2E.rb /mnt/freenas/DCG-RTL/source/linux-3.5.4-dyn/  linux-3.5.4 real x86_32
-其中/mnt/freenas/DCG-RTL/source/linux-3.5.4-dyn/为存放标准格式的动态数据文件所在的文件夹
-目前动态脚本对于动态数据文件名是写死的需要修改该脚本
-
-S2ETimeList.rb
-该脚本是把每个函数执行时间导入到数据库中  
-
-2) 以arm-Nexus5平台的Android-4.4.3内核举例：
-EnterDynamic-Nexux5.rb /mnt/freenas/DCG-RTL/source/Android-4.4.3-dyn/ Android-4.4.3 real arm-Nexus5
-目前动态脚本对于动态数据文件名是写死的需要修改该脚本
 
 
 四、	自动配置脚本介绍
@@ -230,17 +174,13 @@ pic.rb：函数调用图菜单控件
 watchlist：跟lxr结合的接口  
 watchfuc-perl：ruby与perl的接口  
 watch-sql.rb：函数调用列表实现，数据库版  
-######3、	漏洞地图相关脚本：  
-vulnermap:跟lxr结合的接口  
-vulnermap-perl：ruby与perl接口  
-vulnermap.rb：漏洞地图的实现  
+
 ######4、	函数执行路径图相关脚本：  
 Taintrace：跟lxr结合的接口  
 taint-perl：ruby与perl的接口  
 taint-trace.rb：函数执行路径的实现
-######5、	Systrace相关脚本：
-script.js、style.css：由真机下生成的trace.html页面分离  
-systrace-perl：ruby与perl的接口
+
+
 ######6、	Js脚本实现多版本：  
 templats/html/html_head_btn_files/plat.js  
 ######7、	修改的脚本  
@@ -273,28 +213,3 @@ if line2.index("call_insn") or line.index("function_decl")
 if regex.match(line)  
 改为了  
 if regex.match(line) and regex1
-
-九，基于python的文件上传功能
-    环境：apache+mod_python+ubuntu
-    1，安装apache：sudo apt-get install apache2
-    2，安装mod_python库：sudo apt-get install libapache2-mod-python
-    (如果/etc/apache2/mods-available/有python.load文件就说明安装好)
-    3，配置mod_python：
-    sudo vi /etc/apache2/conf.d/lxr
-    加入如下内容：
-          Alias /lxr /usr/local/share/cg-rtl/lxr
-          <Directory /usr/local/share/cg-rtl/lxr>
-             Options All
-             AllowOverride All
-             AddHandler mod_python .py
-             PythonHandler dispatcher2
-             PythonDebug On
-          </Directory>
-    4，重启apache服务器：
-    sudo /etc/init.d/apache2 restart
-    5，把dispatcher2.py，ChangeParameter.py，ExcuteTestScript.py，
-    ImportSymbolTable.py，UploadFile.py，uploadpage.htm加入
-    /usr/local/share/cg-rtl/lxr/中
-    6，新修改，为了满周3提出的要求，弥补在./import中引用uploadpage.htm的不足，
-    我重新写了一个叫做uploadpage.py的脚本来替代uploadpage.htm，现在可以满足
-    “change”按钮的要求。
