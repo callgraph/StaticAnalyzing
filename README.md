@@ -7,7 +7,7 @@ Database version: 5.5.40
 
 LXR version: 1.2.0
 
-一、安装过程
+1. 安装过程
 ================
 如果不是root用户登录，请使用sudo su切换到root账号进行以下操作
 
@@ -56,16 +56,6 @@ lxr及其依赖数据的文件夹真实存放的路径。例如：
 REAL_PATH=/mnt/freenas/DCG-RTL  
 envir1.sh脚本中会有语句将lxr移动到这个路径下
 
-6. 配置服务器ip
-
-这里以当前机器的ip地址为124.16.141.184为例，如果不是，则都要进行相应的修改。  
-1、	修改/lxr/lxr.conf  
-    ,’host_names’=>[‘//localhost’,’//124.16.141.184’]  
-2、	修改/lxr/call  
-    $ttbasurl=sprintf(“http://124.16.141.184/lxr”);  
-3、	修改/lxr/watchlist  
-    $ttbasurl=sprintf(“http://124.16.141.184/lxr”);  
-如果有vulnermap、inst、diffe、energy、import、binder和taintrace的话也需要进行同样的修改。  
 
 7.安装必要的软件、初始化数据库
 
@@ -147,7 +137,7 @@ ln -s /mnt/freenas/DCG_RTL/source/linux-3.5.4 /usr/local/share/cg-rtl/lxr/lxr-co
 
 
 
-四、	自动配置脚本介绍
+1. 自动配置脚本介绍
 ========
 ######1、	start.sh
 自动运行总处理脚本包含envir.sh(设置lxr依赖环境)、run.sh(修改js文件)、call_reuslt.sh(生成画图依赖的数据)
@@ -162,54 +152,12 @@ ln -s /mnt/freenas/DCG_RTL/source/linux-3.5.4 /usr/local/share/cg-rtl/lxr/lxr-co
 ######4、	生成画图依赖的数据call_result.sh
 根据版本和平台编译源码，并生成相应中间结果.sched2、.aux_info等文件，经过call_graph.rb的处理生成画图需要的中间结果。
 
-五、	Lxr新增和修改脚本列表
-====
-######1、	函数调用图相关脚本：  
-call：跟lxr结合的接口  
-callgraph-perl：ruby与perl接口  
-callgraph-sql.rb：函数调用图实现，数据库版本  
-amplify.rb：函数调用图放大  
-pic.rb：函数调用图菜单控件  
-######2、	函数调用列表相关脚本：  
-watchlist：跟lxr结合的接口  
-watchfuc-perl：ruby与perl的接口  
-watch-sql.rb：函数调用列表实现，数据库版  
-
-######4、	函数执行路径图相关脚本：  
-Taintrace：跟lxr结合的接口  
-taint-perl：ruby与perl的接口  
-taint-trace.rb：函数执行路径的实现
 
 
-######6、	Js脚本实现多版本：  
-templats/html/html_head_btn_files/plat.js  
-######7、	修改的脚本  
-lib/LXR/Common.pm Template.pm：新增控件
-
-六、	读取已部署的版本
+1. 读取已部署的版本
 ====
 运行auto_install文件夹下的record.sh脚本可以输出已经部署了哪些版本
 
-七、	补充未部署的版本
+1. 补充未部署的版本
 ====
 用完整的conf文件，更名为confall，并与add_ver文件夹下文件一起复制到auto_install中，运行startnew.sh
-
-八、	部署ucore_plus
-====
-从以下地址下载ucore_plus的源代码
-https://github.com/caoruidong/ucore_plus.git  
-下载之后需要ucore_plus文件夹中的ucore文件夹拷贝到source目录下
-compiler文件夹下的call_graph_db.rb文件,在第133行为ucore增加了一个新的判断条件  
-if( ((line.index("(insn/f")==0 ||(line.index("(insn")==0) ||(line.index("(call_insn")==0) ) && flag1==0) ||(line.index("(jump_insn")==0) ||(line.index("call_insn") ) )  
-改为了  
-if( ((line.index("(insn/f")==0 ||(line.index("(insn")==0) ||(line.index("(call_insn")==0) ) && flag1==0) ||(line.index("(jump_insn")==0) ||(line.index("call_insn") ) || (line.index("(insn")==0 and $kernel_version=="ucore") )  
-
-在第242行为ucore增加了一个新的判断条件  
-if line2.index("call_insn")  
-改为了  
-if line2.index("call_insn") or line.index("function_decl")  
-
-在第244行为ucore增加了一个新的判断条件  
-if regex.match(line)  
-改为了  
-if regex.match(line) and regex1
