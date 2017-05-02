@@ -7,8 +7,8 @@ Database version: 5.5.40
 
 LXR version: 1.2.0
 
-1. 安装过程
-================
+## 1. 安装过程
+
 如果不是root用户登录，请使用sudo su切换到root账号进行以下操作
 
 1. 安装GIT
@@ -137,8 +137,8 @@ ln -s /mnt/freenas/DCG_RTL/source/linux-3.5.4 /usr/local/share/cg-rtl/lxr/lxr-co
 
 
 
-1. 自动配置脚本介绍
-========
+## 1. 自动配置脚本介绍
+
 ######1、	start.sh
 自动运行总处理脚本包含envir.sh(设置lxr依赖环境)、run.sh(修改js文件)、call_reuslt.sh(生成画图依赖的数据)
 ######2、	设置lxr依赖环境envir.sh
@@ -154,10 +154,8 @@ ln -s /mnt/freenas/DCG_RTL/source/linux-3.5.4 /usr/local/share/cg-rtl/lxr/lxr-co
 
 
 
-1. 读取已部署的版本
-====
+## 1. 读取已部署的版本
 运行auto_install文件夹下的record.sh脚本可以输出已经部署了哪些版本
 
-1. 补充未部署的版本
-====
+## 1. 补充未部署的版本
 用完整的conf文件，更名为confall，并与add_ver文件夹下文件一起复制到auto_install中，运行startnew.sh
